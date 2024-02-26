@@ -120,19 +120,4 @@ class ProductManager {
     }
 }
 
-const main = async () => {
-    const manager = new ProductManager('./products.json');
-    console.log(await manager.getProducts());
-    await manager.addProduct('Aceite', 'Aceite de oliva extravirgen', 1500, 'Sin imagen', 'A12', 46);
-    console.log(await manager.getProducts());
-    await manager.getProductById(1);
-    await manager.updateProduct(1, { title: 'Aceite de oliva' });
-    console.log(await manager.getProducts());
-    await manager.deleteProduct(1);
-    console.log(await manager.getProducts());
-    await manager.addProduct('Harina', 'Harina 000', 1200, 'Sin imagen', 'H12', 26);
-    console.log(await manager.getProducts());
-    await manager.getProductById(2);
-}
-
-main();
+module.exports = ProductManager;
