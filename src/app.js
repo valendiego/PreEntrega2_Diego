@@ -1,13 +1,12 @@
-const ProductManager = require('./productManager');
-
+const ProductManager = require('./ProductManager');
 const express = require('express');
 const app = express();
 
-const main = async () => {
-    const manager = new ProductManager('../products.json')
-    const products = await manager.getProducts();
+const manager = new ProductManager('../assets/products.json');
 
-    app.get('/products', (req, res) => {
+app.get('/products', async (req, res) => {
+    try {
+        const products = await manager.getProducts();
         const limitFilter = req.query.limit;
 
         if (limitFilter <= 0) {
@@ -22,17 +21,21 @@ const main = async () => {
         } else {
             res.json(products);
         }
-    });
+    } catch {
+        res.json({ Error: 'Error al cargar los productos' });
+    };
+});
 
-    app.get('/products/:pid', async (req, res) => {
+app.get('/products/:pid', async (req, res) => {
+    try {
         const productId = parseInt(req.params.pid);
         const product = await manager.getProductById(productId);
         product ? res.json(product) : res.json('El producto no existe');
-    })
+    } catch {
+        res.json({ Error: 'Error al buscar el id' });
+    }
+});
 
-    app.listen(8080, () => {
-        console.log('Server Listo!');
-    });
-}
-
-main();
+app.listen(8080, () => {
+    console.log('Server Listo!');
+});
