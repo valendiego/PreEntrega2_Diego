@@ -7,6 +7,7 @@ Este proyecto fue creado para el curso de Programación Backend de Coderhouse.
 ## Correr de manera local
 ```bash
 $ git clone https://github.com/valendiego/preEntrega3_Diego.git
+$ cd preEntrega3_Diego
 $ npm install
 $ cd src
 $ nodemon app
