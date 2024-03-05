@@ -2,15 +2,15 @@ const ProductManager = require('./ProductManager');
 const express = require('express');
 const app = express();
 
-const manager = new ProductManager('../assets/products.json');
+const manager = new ProductManager(`./assets/products.json`);
 
 app.get('/products', async (req, res) => {
     try {
         const products = await manager.getProducts();
-        const limitFilter = req.query.limit;
+        const limitFilter = +req.query.limit;
 
-        if (limitFilter <= 0) {
-            res.status(400).json({ error: 'El límite debe ser superior a 0' });
+        if (limitFilter <= 0 || isNaN(parseInt(limitFilter))) {
+            res.status(400).json({ error: 'Debe ingresar un número válido superior a 0.' });
             return;
         }
 
@@ -37,5 +37,5 @@ app.get('/products/:pid', async (req, res) => {
 });
 
 app.listen(8080, () => {
-    console.log('Server Listo!');
+    console.log('Server listo!');
 });

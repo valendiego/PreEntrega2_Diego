@@ -31,7 +31,7 @@ class ProductManager {
     }
 
     #saveFile() {
-        fs.writeFileSync(this.path, JSON.stringify(this.#products, null, 2), 'utf-8');
+        fs.writeFile(this.path, JSON.stringify(this.#products, null, 2), 'utf-8');
     }
 
     #getNewId() {
