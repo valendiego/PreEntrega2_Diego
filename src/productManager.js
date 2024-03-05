@@ -3,39 +3,39 @@ const fs = require('fs').promises;
 class ProductManager {
 
     #products;
-    #lastId;
+    #lastProductId;
     path;
 
     constructor(path) {
         this.#products = [];
         this.path = path;
-        this.#lastId = 1;
+        this.#lastProductId = 1;
         this.#readFile();
     }
 
-    #readFile() {
+    async #readFile() {
         try {
-            const fileData = fs.readFileSync(this.path, 'utf-8');
+            const fileData = await fs.readFile(this.path, 'utf-8');
             this.#products = JSON.parse(fileData);
-            this.#updateLastId();
+            this.#updateLastProductId();
         } catch (error) {
-            this.#saveFile();
+            await this.#saveFile();
         }
     }
 
-    #updateLastId() {
+    #updateLastProductId() {
         const lastProduct = this.#products[this.#products.length - 1];
         if (lastProduct) {
-            this.#lastId = lastProduct.id + 1;
+            this.#lastProductId = lastProduct.id + 1;
         }
     }
 
-    #saveFile() {
-        fs.writeFile(this.path, JSON.stringify(this.#products, null, 2), 'utf-8');
+    async #saveFile() {
+        await fs.writeFile(this.path, JSON.stringify(this.#products, null, 2), 'utf-8');
     }
 
     #getNewId() {
-        return this.#lastId ++;
+        return this.#lastProductId++;
     }
 
     async addProduct(title, description, price, thumbnail, code, stock) {
@@ -55,7 +55,7 @@ class ProductManager {
         if (!findProductCode) {
             const product = { id: this.#getNewId(), title, description, price, thumbnail, code, stock };
             this.#products.push(product);
-            this.#saveFile();
+            await this.#saveFile();
             console.log('Agregado Correctamente');
         } else {
             console.error('El código de producto ya existe');
@@ -64,7 +64,7 @@ class ProductManager {
 
     async getProducts() {
         try {
-            const fileContents = await fs.promises.readFile(this.path, 'utf-8');
+            const fileContents = await fs.readFile(this.path, 'utf-8');
             const existingProduct = JSON.parse(fileContents);
             return existingProduct
         } catch (err) {
@@ -84,7 +84,7 @@ class ProductManager {
         }
     }
 
-    updateProduct(id, updatedProduct) {
+    async updateProduct(id, updatedProduct) {
         const indexToUpdate = this.#products.findIndex(el => el.id === id);
 
         if (indexToUpdate !== -1) {
@@ -101,18 +101,18 @@ class ProductManager {
             }
 
             this.#products[indexToUpdate] = { ...this.#products[indexToUpdate], ...updatedProduct, id };
-            this.#saveFile();
+            await this.#saveFile();
             console.log('Producto actualizado correctamente');
         } else {
             console.error('Not found: El ID solicitado no existe');
         }
     }
 
-    deleteProduct(id) {
+    async deleteProduct(id) {
         const indexToDelete = this.#products.findIndex(el => el.id === id);
         if (indexToDelete !== -1) {
             this.#products.splice(indexToDelete, 1);
-            this.#saveFile();
+            await this.#saveFile();
             console.log('Producto eliminado correctamente');
         } else {
             console.error('Not found: El ID solicitado no existe');
