@@ -30,7 +30,7 @@ router.get('/:pid', async (req, res) => {
     try {
         const productId = parseInt(req.params.pid);
         const product = await manager.getProductById(productId);
-        product ? res.status(200).json(product) : res.status(400).json('El producto no existe');
+        res.status(200).json(product);
     } catch {
         res.status(500).json({ Error: 'Error al cargar los productos' });
     }
