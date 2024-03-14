@@ -1,56 +1,65 @@
 [
-    {
-        "id": 1,
-        "title": "Laptop ASUS",
-        "description": "Potente laptop con procesador Intel i7 y tarjeta gráfica dedicada.",
-        "price": 1200.99,
-        "thumbnail": "laptop_asus.jpg",
-        "code": "ASUS123",
-        "stock": 50
-    },
-    {
-        "id": 2,
-        "title": "Teléfono inteligente Samsung",
-        "description": "Teléfono Android de última generación con pantalla AMOLED y cámara de alta resolución.",
-        "price": 899.99,
-        "thumbnail": "samsung_phone.jpg",
-        "code": "SAMSUNG456",
-        "stock": 30
-    },
-    {
-        "id": 3,
-        "title": "Auriculares inalámbricos Sony",
-        "description": "Auriculares con cancelación de ruido y calidad de sonido excepcional.",
-        "price": 199.99,
-        "thumbnail": "sony_headphones.jpg",
-        "code": "SONY789",
-        "stock": 20
-    },
-    {
-        "id": 4,
-        "title": "Cámara Canon DSLR",
-        "description": "Cámara réflex digital con sensor de alta resolución y grabación de video 4K.",
-        "price": 1499.99,
-        "thumbnail": "canon_camera.jpg",
-        "code": "CANON101",
-        "stock": 15
-    },
-    {
-        "id": 5,
-        "title": "Smartwatch Fitbit",
-        "description": "Reloj inteligente con monitor de actividad física, GPS integrado y resistencia al agua.",
-        "price": 129.99,
-        "thumbnail": "fitbit_watch.jpg",
-        "code": "FITBIT202",
-        "stock": 40
-    },
-    {
-        "id": 6,
-        "title": "Impresora HP Todo en Uno",
-        "description": "Impresora multifunción con escáner y copiadora, ideal para el hogar o la oficina.",
-        "price": 299.99,
-        "thumbnail": "hp_printer.jpg",
-        "code": "HP303",
-        "stock": 25
-    }
+  {
+    "id": 1,
+    "title": "Laptop ASUS",
+    "description": "Potente laptop con procesador Intel i7 y tarjeta gráfica dedicada.",
+    "price": 1200,
+    "thumbnail": "../img/laptop.webp",
+    "code": "ASUS123",
+    "stock": 50
+  },
+  {
+    "id": 2,
+    "title": "Teléfono inteligente Samsung",
+    "description": "Teléfono Android de última generación con pantalla AMOLED y cámara de alta resolución.",
+    "price": 899,
+    "thumbnail": "../img/samsung.webp",
+    "code": "SAMSUNG456",
+    "stock": 30
+  },
+  {
+    "id": 3,
+    "title": "Auriculares inalámbricos Sony",
+    "description": "Auriculares con cancelación de ruido y calidad de sonido excepcional.",
+    "price": 199,
+    "thumbnail": "../img/auriculares.webp",
+    "code": "SONY789",
+    "stock": 20
+  },
+  {
+    "id": 4,
+    "title": "Cámara Canon DSLR",
+    "description": "Cámara réflex digital con sensor de alta resolución y grabación de video 4K.",
+    "price": 1499,
+    "thumbnail": "../img/camara.webp",
+    "code": "CANON101",
+    "stock": 15
+  },
+  {
+    "id": 5,
+    "title": "Smartwatch Fitbit",
+    "description": "Reloj inteligente con monitor de actividad física, GPS integrado y resistencia al agua.",
+    "price": 129,
+    "thumbnail": "../img/smartwatch.webp",
+    "code": "FITBIT202",
+    "stock": 40
+  },
+  {
+    "id": 6,
+    "title": "Impresora HP Todo en Uno",
+    "description": "Impresora multifunción con escáner y copiadora, ideal para el hogar o la oficina.",
+    "price": 299,
+    "thumbnail": "../img/impresora.webp",
+    "code": "HP303",
+    "stock": 25
+  },
+  {
+    "id": 7,
+    "title": "Monitor LG Ultrawide",
+    "description": "Monitor ultrapanorámico con resolución 4K y tecnología IPS para una calidad de imagen excepcional.",
+    "price": "799",
+    "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRzxuetLuKWfFXgXxI2_9EeUMarnijWlIfnCdUyTBrxMyAN2mON0lrcug146jUNgrJ-PyPj_gYhD-3AnobCneex8SeCJrcBvQ1MGHHni3ym&usqp=CAE",
+    "code": "LG777",
+    "stock": "true"
+  }
 ]
