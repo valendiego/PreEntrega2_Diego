@@ -48,7 +48,7 @@
     padding: 120px 40px 40px 40px;
 }
 
-/* REAL TIME PRODUCTS */
+/* CREAR PRODUCTO */
 .container__form{
     display: flex;
     flex-direction: column;
@@ -66,4 +66,26 @@
     padding: 20px;
     background-color: aliceblue;
     border: 1px solid #77777744;
+}
+
+/* CHAT */
+.chat{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 120px 0 0 0;
+    border: 1px solid #000;
+    width: 500px;
+}
+
+.title__chat{
+    font-size: 2rem;
+}
+
+#messageLogs{
+    width: 100%;
+    height: 100%;
+    border: 1px solid #000;
 }

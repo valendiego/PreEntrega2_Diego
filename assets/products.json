@@ -54,12 +54,13 @@
     "stock": 25
   },
   {
-    "id": 7,
-    "title": "Monitor LG Ultrawide",
-    "description": "Monitor ultrapanorámico con resolución 4K y tecnología IPS para una calidad de imagen excepcional.",
-    "price": "799",
-    "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRzxuetLuKWfFXgXxI2_9EeUMarnijWlIfnCdUyTBrxMyAN2mON0lrcug146jUNgrJ-PyPj_gYhD-3AnobCneex8SeCJrcBvQ1MGHHni3ym&usqp=CAE",
-    "code": "LG777",
-    "stock": "true"
+    "id": 8,
+    "title": "iPhone 7 Plus",
+    "description": "Teléfono Apple con pantalla Retina HD de 5.5 pulgadas y cámara dual de 12 MP.",
+    "price": "600",
+    "thumbnail": "https://i5.walmartimages.com/seo/Pre-Owned-iPhone-7-Plus-128GB-Rose-Gold-Unlocked-Refurbished-Good_782e6ad7-8539-4791-acc2-620b8eb3c2d5_1.f978d711e021c2a70d735fbb24d51c10.jpeg",
+    "code": "APPLE888",
+    "status": "true",
+    "stock": "15"
   }
 ]
