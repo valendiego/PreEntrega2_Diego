@@ -1,66 +1,92 @@
 [
   {
-    "id": 1,
     "title": "Laptop ASUS",
     "description": "Potente laptop con procesador Intel i7 y tarjeta gráfica dedicada.",
     "price": 1200,
     "thumbnail": "../img/laptop.webp",
     "code": "ASUS123",
-    "stock": 50
+    "stock": 50,
+    "category": "laptops"
   },
   {
-    "id": 2,
     "title": "Teléfono inteligente Samsung",
     "description": "Teléfono Android de última generación con pantalla AMOLED y cámara de alta resolución.",
     "price": 899,
     "thumbnail": "../img/samsung.webp",
     "code": "SAMSUNG456",
-    "stock": 30
+    "stock": 30,
+    "category": "celulares"
   },
   {
-    "id": 3,
     "title": "Auriculares inalámbricos Sony",
     "description": "Auriculares con cancelación de ruido y calidad de sonido excepcional.",
     "price": 199,
     "thumbnail": "../img/auriculares.webp",
     "code": "SONY789",
-    "stock": 20
+    "stock": 20,
+    "category": "auriculares"
   },
   {
-    "id": 4,
-    "title": "Cámara Canon DSLR",
-    "description": "Cámara réflex digital con sensor de alta resolución y grabación de video 4K.",
-    "price": 1499,
-    "thumbnail": "../img/camara.webp",
-    "code": "CANON101",
-    "stock": 15
+    "title": "Laptop Dell XPS",
+    "description": "Laptop ultradelgada con procesador Intel Core i7 y pantalla táctil de alta definición.",
+    "price": 1500,
+    "thumbnail": "../img/laptop-dell.webp",
+    "code": "DELLXPS567",
+    "stock": 15,
+    "category": "laptops"
   },
   {
-    "id": 5,
-    "title": "Smartwatch Fitbit",
-    "description": "Reloj inteligente con monitor de actividad física, GPS integrado y resistencia al agua.",
+    "title": "Teléfono inteligente iPhone 13",
+    "description": "Teléfono Apple con chip A15 Bionic, cámara dual avanzada y pantalla Super Retina XDR.",
+    "price": 1099,
+    "thumbnail": "../img/iphone13.webp",
+    "code": "IPHONE13XYZ",
+    "stock": 40,
+    "category": "celulares"
+  },
+  {
+    "title": "Auriculares Bluetooth JBL",
+    "description": "Auriculares inalámbricos con conectividad Bluetooth y sonido potente.",
     "price": 129,
-    "thumbnail": "../img/smartwatch.webp",
-    "code": "FITBIT202",
-    "stock": 40
+    "thumbnail": "../img/jbl-auriculares.webp",
+    "code": "JBL789",
+    "stock": 25,
+    "category": "auriculares"
   },
   {
-    "id": 6,
-    "title": "Impresora HP Todo en Uno",
-    "description": "Impresora multifunción con escáner y copiadora, ideal para el hogar o la oficina.",
+    "title": "Laptop HP Pavilion",
+    "description": "Laptop versátil con procesador AMD Ryzen y gráficos integrados.",
+    "price": 899,
+    "thumbnail": "../img/laptop-hp.webp",
+    "code": "HP123",
+    "stock": 20,
+    "category": "laptops"
+  },
+  {
+    "title": "Teléfono inteligente Google Pixel 6",
+    "description": "Teléfono Android con procesador Tensor y cámara de alta calidad.",
+    "price": 799,
+    "thumbnail": "../img/pixel6.webp",
+    "code": "PIXEL678",
+    "stock": 30,
+    "category": "celulares"
+  },
+  {
+    "title": "Auriculares inalámbricos Bose",
+    "description": "Auriculares con cancelación de ruido adaptable y sonido envolvente.",
     "price": 299,
-    "thumbnail": "../img/impresora.webp",
-    "code": "HP303",
-    "stock": 25
+    "thumbnail": "../img/bose-auriculares.webp",
+    "code": "BOSE456",
+    "stock": 15,
+    "category": "auriculares"
   },
   {
-    "id": 8,
-    "title": "iPhone 7 Plus",
-    "description": "Teléfono Apple con pantalla Retina HD de 5.5 pulgadas y cámara dual de 12 MP.",
-    "price": "600",
-    "thumbnail": "https://i5.walmartimages.com/seo/Pre-Owned-iPhone-7-Plus-128GB-Rose-Gold-Unlocked-Refurbished-Good_782e6ad7-8539-4791-acc2-620b8eb3c2d5_1.f978d711e021c2a70d735fbb24d51c10.jpeg",
-    "code": "APPLE888",
-    "status": "true",
-    "stock": "15"
+    "title": "Laptop Apple MacBook Air",
+    "description": "Laptop ligera y potente con chip M1 y pantalla Retina.",
+    "price": 1199,
+    "thumbnail": "../img/macbook-air.webp",
+    "code": "MACBOOKAIR567",
+    "stock": 10,
+    "category": "laptops"
   }
 ]

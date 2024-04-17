@@ -1,14 +1,25 @@
+<p>Página actual: {{products.page}}</p>
 <div class="container home">
-    {{#each products}}
+    {{#each products.payload}}
     <div class="card" style="width: 18rem;">
-        <img src="{{thumbnail}}" class="card-img-top" alt="{{title}}">
-        <div class="card-body">
-            <h5 class="card-title">{{title}}</h5>
-            <p class="card-text">{{description}}</p>
-            <p class="card-text">${{price}}</p>
-            <p class="card-text">Stock: {{stock}}</p>
-            <p class="card-text">Código: {{code}}</p>
+        <img src="{{this.thumbnail}}" class="card-img-top" alt="{{this.title}}">
+        <div class="cart-body">
+            <h4 class="card-title">{{this.title}}</h4>
+            <p class="card-text">Precio: {{this.price}}</p>
+            <p class="card-text">Descripción: {{this.description}}</p>
+            <p class="card-text">Stock: {{this.stock}}</p>
+            <p class="card-text">ID: {{this._id}}</p>
+            <a href="http://localhost:8080/api/products/{{this._id}}">Ver</a>
         </div>
     </div>
     {{/each}}
+    <div class="container">
+        {{#if products.hasPrevPage}}
+        <a href="{{products.prevLink}}">Anterior</a>
+        {{/if}}
+
+        {{#if products.hasNextPage}}
+        <a href="{{products.nextLink}}">Siguiente</a>
+        {{/if}}
+    </div>
 </div>

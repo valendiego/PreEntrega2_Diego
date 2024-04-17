@@ -1,15 +1,20 @@
 const mongoose = require('mongoose');
 
-const collection = 'Carts'
-
 const schema = new mongoose.Schema({
-    products: {
-        type: Array,
-    }
+    products: [{
+        product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Products'
+        },
+        quantity: {
+            type: Number,
+            default: 0
+        }
+    }]
 });
 
 schema.virtual('id').get(function () {
     return this._id.toString()
 });
 
-module.exports = mongoose.model(collection, schema, 'carts');
+module.exports = mongoose.model('Carts', schema, 'carts');
