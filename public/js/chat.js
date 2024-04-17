@@ -41,7 +41,13 @@ socket.on('message', (data) => {
     const { user, message } = data
 
     let content = messageLogs.innerHTML
-    content += `<strong>${user} dice: </strong>${message}</br>`
+    
+    const formattedMessage = `<div class="chat-message">
+                                <strong><span class="username">${user} dice:</span></strong>
+                                <span class="message-text">${message}</span>
+                              </div>`
+
+    content += formattedMessage                            
 
     messageLogs.innerHTML = content
 })
