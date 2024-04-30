@@ -18,8 +18,10 @@ class ProductManager {
                 ...(category && { category: category }),
                 ...(availability && { status: availability === 'true' })
             };
+
+            // Configurar el límite de la consulta según el parámetro
             const options = {
-                limit: parseInt(limit),
+                limit: limit ? parseInt(limit) : 1000,
                 page: parseInt(page),
                 sort: sort ? { price: sort } : undefined,
                 lean: true
@@ -27,9 +29,13 @@ class ProductManager {
 
             const allProducts = await Products.paginate(query, options);
 
+            if (isNaN(page) || page > allProducts.totalPages) {
+                throw new Error('La página no existe');
+            }
+
             const status = allProducts ? 'success' : 'error';
-            const prevLink = allProducts.hasPrevPage ? `/api/products?page=${allProducts.prevPage}` : null;
-            const nextLink = allProducts.hasNextPage ? `/api/products?page=${allProducts.nextPage}` : null;
+            const prevLink = allProducts.hasPrevPage ? `/products?page=${allProducts.prevPage}` : null;
+            const nextLink = allProducts.hasNextPage ? `/products?page=${allProducts.nextPage}` : null;
 
             const result = {
                 status,
@@ -48,6 +54,7 @@ class ProductManager {
             throw new Error('Error al obtener los productos');
         }
     }
+
 
     async getProductById(id) {
         try {
@@ -87,7 +94,7 @@ class ProductManager {
         }
 
         try {
-            await Products.create({
+            const product = await Products.create({
                 title,
                 description,
                 price,
@@ -99,6 +106,7 @@ class ProductManager {
             });
 
             console.log('Producto agregado correctamente');
+            return product
         } catch (error) {
             console.error('Error al agregar el producto desde DB:', error);
             throw new Error('Error al agregar el producto desde DB');

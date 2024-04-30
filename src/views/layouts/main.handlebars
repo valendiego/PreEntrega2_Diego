@@ -18,8 +18,14 @@
             <li><a href="http://localhost:8080/api/products">Productos</a></li>
             <li><a href="http://localhost:8080/api/createProduct">Crear producto</a></li>
             <li><a href="http://localhost:8080/api/cart">Carritos</a></li>
-            <li><a href="http://localhost:8080/api/chat">Chat en vivo</a></li>
+            <li><a href="http://localhost:8080">Sesión</a></li>
         </ul>
+        {{#if isNotLoggedIn}}
+        <ul class="ul">
+            <li><a href="http://localhost:8080/products">Productos</a></li>
+            <li><a href="http://localhost:8080">Sesión</a></li>
+        </ul>
+        {{/if}}
     </nav>
     {{{body}}}
 
