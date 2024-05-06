@@ -21,7 +21,7 @@
 }
 
 .header{
-    padding-top: 80px;
+    padding-top: 100px;
 }
 
 .title{
@@ -74,7 +74,9 @@
 }
 
 /* LOGIN */
-.container__login{
-    padding: 40px;
+.formulario{
+    gap: 40px;
 }
+
+
 

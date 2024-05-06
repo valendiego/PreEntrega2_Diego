@@ -1,22 +1,31 @@
 <div class="margin container">
-    <form action="/api/sessions/register" method="post" enctype="application/x-www-form-urlencoded">
-        <label for="_f_name">Nombre:</label>
-        <input type="text" name="firstName" id="_f_name" />
-
-        <label for="_l_name">Apellido:</label>
-        <input type="text" name="lastName" id="_l_name" />
-
-        <label for="_age">Edad:</label>
-        <input type="number" name="age" id="_age" min="1" />
-
-        <label for="_email">Email:</label>
-        <input type="email" name="email" id="_email" />
-
-        <label for="_pass">Contraseña:</label>
-        <input type="password" name="password" id="_pass" />
-
-        <button type="submit">Registrarte</button>
+    <form class="col g-3" action="/api/sessions/register" method="post" enctype="application/x-www-form-urlencoded">
+        <div class="col-md-4">
+            <label for="_f_name" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="_f_name" name="firstName">
+        </div>
+        <div class="col-md-4">
+            <label for="_l_name" class="form-label">Apellido</label>
+            <input type="text" class="form-control" id="_l_name" name="lastName">
+        </div>
+        <div class="col-md-4">
+            <label for="_email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="_email" placeholder="nombre@ejemplo.com" name="email">
+        </div>
+        <div class="col-md-4">
+            <label for="_age" class="form-label">Edad</label>
+            <input type="number" name="age" id="_age" min="1" class="form-control"/>
+        </div>
+        <div class="col-md-4">
+            <label for="_pass" class="form-label">Contraseña</label>
+            <input type="password" id="_pass" class="form-control" aria-describedby="passwordHelpBlock" name="password">
+            <div id="passwordHelpBlock" class="form-text">
+                Su contraseña debe tener entre 8-20 caracteres y contener letras y números, sin espacios, caracteres
+                especiales o emojis.
+            </div>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-primary" type="submit">Registrarme</button>
+        </div>
     </form>
-
-    <a class="margin" href="/">Volver</a>
 </div>
