@@ -40,14 +40,14 @@ const inicializeStrategy = () => {
     }, async (username, password, done) => {
         try {
 
-            if (username === 'adminCoder@coder.com' && password === 'adminCod3r123') {
+            if (username === 'valentinadiego90@gmail.com' && password === 'micontraseña123') {
                 adminUser = {
                     _id: new ObjectId(),
-                    firstName: 'Romina',
-                    lastName: 'Molina',
-                    age: 18,
-                    email: 'adminCoder@coder.com',
-                    password: 'adminCod3r123',
+                    firstName: 'Valentina',
+                    lastName: 'Diego',
+                    age: 20,
+                    email: 'valentinadiego90@gmail.com',
+                    password: 'micontraseña123',
                     rol: 'admin'
                 };
                 return done(null, adminUser);

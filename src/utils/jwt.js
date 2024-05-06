@@ -1,7 +1,7 @@
 require('dotenv').config(); // Carga las variables de entorno desde .env
 const jwt = require('jsonwebtoken')
 
-const PRIVATE_KEY = process.env.JWT_SECRET
+const PRIVATE_KEY = "contraseñaprivada"
 
 const generateToken = user => {
     const token = jwt.sign({ user }, PRIVATE_KEY, { expiresIn: '24h' })
