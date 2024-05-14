@@ -4,6 +4,7 @@ const router = Router(); // Crea un enrutador
 // Ruta para obtener todos los productos
 router.get('/', async (req, res) => {
     try {
+        const isLoggedIn = ![null, undefined].includes(req.session.user);
         const page = req.query.page || 1;
         const limit = req.query.limit || 10;
         const sort = req.query.sort;
@@ -17,7 +18,9 @@ router.get('/', async (req, res) => {
             products,
             titlePage: 'Productos',
             style: ['styles.css'],
-            script: ['products.js']
+            script: ['products.js'],
+            isLoggedIn,
+            isNotLoggedIn: !isLoggedIn
         });
 
     } catch {
@@ -28,7 +31,7 @@ router.get('/', async (req, res) => {
 // Ruta para obtener un producto por su ID
 router.get('/:pid', async (req, res) => {
     try {
-
+        const isLoggedIn = ![null, undefined].includes(req.session.user);
         const productId = req.params.pid; // Obtiene el ID del producto de los parámetros de la solicitud como una cadena
         const productManager = req.app.get('productManager');
         const product = await productManager.getProductById(productId); // Obtiene el producto por su ID
@@ -47,6 +50,8 @@ router.get('/:pid', async (req, res) => {
             product: [productData],
             titlePage: `Productos | ${product.title}`,
             style: ['styles.css'],
+            isLoggedIn,
+            isNotLoggedIn: !isLoggedIn
         });
 
 
@@ -59,7 +64,9 @@ router.get('/:pid', async (req, res) => {
 router.post('/:pid', async (req, res) => {
     try {
         const productId = req.params.pid;
-        const cartId = '662047bf348e11788bed4c57'
+        const user = req.session.user;
+        console.log(user);
+        const cartId = user.cart;
         const cartManager = req.app.get('cartManager');
         await cartManager.addProductToCart(productId, cartId)
         res.status(301).redirect('/api/products');

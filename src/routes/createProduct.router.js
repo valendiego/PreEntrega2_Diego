@@ -2,10 +2,13 @@ const { Router } = require('express'); // Importa la clase Router de Express par
 const router = Router(); // Crea un enrutador
 
 router.get('/', async (_, res) => {
+    const isLoggedIn = ![null, undefined].includes(req.session.user);
     res.render('createProduct', {
         titlePage: 'Agregar Producto',
         style: ['styles.css'],
-        script: ['createProduct.js']
+        script: ['createProduct.js'],
+        isLoggedIn,
+        isNotLoggedIn: !isLoggedIn
     });
 });
 

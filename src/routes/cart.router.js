@@ -4,6 +4,7 @@ const router = Router(); // Crea un enrutador
 // Ruta para obtener todos los carritos
 router.get('/', async (req, res) => {
     try {
+        const isLoggedIn = ![null, undefined].includes(req.session.user);
         const cartManager = req.app.get('cartManager');
         const carts = await cartManager.getCarts(); // Obtiene todos los carritos
 
@@ -16,6 +17,8 @@ router.get('/', async (req, res) => {
             carts: cartsData,
             titlePage: 'Carritos',
             style: ['styles.css'],
+            isLoggedIn,
+            isNotLoggedIn: !isLoggedIn
         }); // Responde con los carritos obtenidos
     } catch {
         res.status(500).json({ error: 'No se pudo conectar con los carritos' }); // Responde con un error 500 si hay un error al obtener los carritos
@@ -25,6 +28,7 @@ router.get('/', async (req, res) => {
 // Ruta para obtener un carrito por su ID
 router.get('/:cid', async (req, res) => {
     try {
+        const isLoggedIn = ![null, undefined].includes(req.session.user);
         const cartId = req.params.cid; // Obtiene el ID del carrito de los parámetros de la solicitud
         const cartManager = req.app.get('cartManager');
         const cart = await cartManager.getCartById(cartId); // Obtiene el carrito por su ID
@@ -43,6 +47,8 @@ router.get('/:cid', async (req, res) => {
             cart: cartData,
             titlePage: 'Carrito',
             style: ['styles.css'],
+            isLoggedIn,
+            isNotLoggedIn: !isLoggedIn
         }); // Responde con el carrito obtenido
 
     } catch (err) {

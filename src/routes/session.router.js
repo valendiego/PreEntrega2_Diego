@@ -4,7 +4,7 @@ const passport = require('passport');
 
 router.post('/login', passport.authenticate('login', { failureRedirect: '/api/sessions/faillogin' }), async (req, res) => {
     try {
-        req.session.user = { email: req.user.email, _id: req.user._id.toString(), rol: req.user.rol, firstName: req.user.firstName, lastName: req.user.lastName, age: req.user.age }
+        req.session.user = { email: req.user.email, _id: req.user._id.toString(), rol: req.user.rol, firstName: req.user.firstName, lastName: req.user.lastName, cart: req.user.cart}
         res.redirect('/');
     } catch (err) {
         res.status(500).json({ error: err.message })
@@ -14,7 +14,7 @@ router.post('/login', passport.authenticate('login', { failureRedirect: '/api/se
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => { })
 
 router.get('/githubcallback', passport.authenticate('github', { failureRedirect: '/login' }), async (req, res) => {
-    req.session.user = { email: req.user.email, _id: req.user._id.toString(), rol: req.user.rol, firstName: req.user.firstName, lastName: req.user.lastName, age: req.user.age };
+    req.session.user = { email: req.user.email, _id: req.user._id.toString(), rol: req.user.rol, firstName: req.user.firstName, lastName: req.user.lastName, cart: req.user.cart}
     res.redirect('/');
 })
 

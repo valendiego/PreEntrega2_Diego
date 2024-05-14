@@ -35,19 +35,16 @@ router.get('/profile', async (req, res) => {
             const user = {
                 firstName: req.session.user.firstName,
                 lastName: req.session.user.lastName,
-                age: req.session.user.age,
                 email: req.session.user.email,
                 rol: req.session.user.rol,
             }
-
-            console.log('Edad desde el router: ', req.session.user);
+            
             res.render('profile', {
                 style: ['styles.css'],
                 titlePage: 'Perfil',
                 user: {
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    age: user.age,
                     email: user.email,
                     rol: user.rol
                 }, isLoggedIn
@@ -65,7 +62,7 @@ router.get('/profile', async (req, res) => {
 router.get('/resetPassword', async (_, res) => {
     try {
 
-        res.render('reset_password', {
+        res.render('reset-password', {
             titlePage: 'Reset Password',
             style: ['styles.css']
         });
