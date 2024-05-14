@@ -2,6 +2,7 @@ const passport = require('passport');
 const { Strategy } = require('passport-github2');
 const { Users } = require('../dao/models');
 const { clientID, clientSecret, callbackURL } = require('./github.private');
+const CartManager = require('../dao/dbManagers/CartManager');
 
 const inicializeStrategy = () => {
 
@@ -18,16 +19,20 @@ const inicializeStrategy = () => {
                 return done(null, user)
             }
 
+            const cartManager = new CartManager();
+
             // crear el usuario, ya que no existe
             const fullName = profile._json.name
             const firstName = fullName.substring(0, fullName.lastIndexOf(' '))
             const lastName = fullName.substring(fullName.lastIndexOf(' ') + 1)
+            const newCart = cartManager.addCart();
             const newUser = {
                 firstName,
                 lastName,
                 age: 30,
                 email: profile._json.email,
-                password: ''
+                password: '',
+                cart: newCart
             }
             const result = await Users.create(newUser)
             done(null, result)

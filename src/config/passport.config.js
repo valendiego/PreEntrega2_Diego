@@ -4,6 +4,7 @@ const { Users } = require('../dao/models');
 const { hashPassword, isValidPassword } = require('../utils/hashing');
 const { default: mongoose } = require('mongoose');
 const { ObjectId } = mongoose.Types;
+const CartManager = require('../dao/dbManagers/CartManager');
 
 const inicializeStrategy = () => {
     passport.use('register', new Strategy(
@@ -12,22 +13,24 @@ const inicializeStrategy = () => {
             try {
 
                 const user = await Users.findOne({ email: username });
+                const cartManager = new CartManager();
                 console.log(user);
-                if (user || username === 'adminCoder@coder.com') {
+                if (user || username === 'valentinadiego90@gmail.com') {
                     console.log('El usuario ya existe.');
                     return done(null, false);
                 } else {
+                    const newCart = await cartManager.addCart();
                     const newUser = {
                         firstName,
                         lastName,
                         email,
-                        age: +age,
-                        password: hashPassword(password)
+                        password: hashPassword(password),
+                        cart: newCart
                     }
 
                     // Nuevo usuario creado exitosamente
                     const result = await Users.create(newUser);
-                    return done(null, result);
+                    return done(null, result, { message: 'Registrado exitosamente' });
                 }
             } catch (err) {
                 done(err);

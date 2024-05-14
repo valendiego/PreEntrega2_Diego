@@ -51,7 +51,6 @@ app.use('/api/cart', cartRouter); // Rutas relacionadas con el carrito
 app.use('/api/createProduct', createProductRouter);
 app.use('/api/sessions', sessionRouter);
 app.use('/', sessionViewsRouter);
-app.use('/api/sessions/register', sessionRouter);
 
 
 // Se inicia el servidor en el puerto 8080

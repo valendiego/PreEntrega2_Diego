@@ -1,5 +1,6 @@
-<div class="margin container">
-    <form class="col g-3" action="/api/sessions/register" method="post" enctype="application/x-www-form-urlencoded">
+<div class="container__form">
+    <h1 class="title">Registro</h1>
+    <form class="col g-3 form__reglog" action="/api/sessions/register" method="post" enctype="application/x-www-form-urlencoded">
         <div class="col-md-4">
             <label for="_f_name" class="form-label">Nombre</label>
             <input type="text" class="form-control" id="_f_name" name="firstName">
@@ -13,10 +14,6 @@
             <input type="email" class="form-control" id="_email" placeholder="nombre@ejemplo.com" name="email">
         </div>
         <div class="col-md-4">
-            <label for="_age" class="form-label">Edad</label>
-            <input type="number" name="age" id="_age" min="1" class="form-control"/>
-        </div>
-        <div class="col-md-4">
             <label for="_pass" class="form-label">Contraseña</label>
             <input type="password" id="_pass" class="form-control" aria-describedby="passwordHelpBlock" name="password">
             <div id="passwordHelpBlock" class="form-text">
@@ -28,4 +25,11 @@
             <button class="btn btn-primary" type="submit">Registrarme</button>
         </div>
     </form>
+    <div>
+        <a class="back" href="/"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                    d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5" />
+            </svg>Volver</a>
+    </div>
 </div>

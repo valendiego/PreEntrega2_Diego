@@ -68,14 +68,9 @@ class UserManager {
 
             const hashedPassword = hashPassword(password);
 
-            if (age <= 0) {
-                throw new Error('La edad debe ser mayor a 1')
-            }
-
             await Users.create({
                 firstName: firstNameManager,
                 lastName: lastNameManager,
-                age: numericAge,
                 email,
                 password: hashedPassword
             })

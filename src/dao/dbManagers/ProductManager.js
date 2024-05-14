@@ -34,8 +34,8 @@ class ProductManager {
             }
 
             const status = allProducts ? 'success' : 'error';
-            const prevLink = allProducts.hasPrevPage ? `/products?page=${allProducts.prevPage}` : null;
-            const nextLink = allProducts.hasNextPage ? `/products?page=${allProducts.nextPage}` : null;
+            const prevLink = allProducts.hasPrevPage ? `/api/products?page=${allProducts.prevPage}` : null;
+            const nextLink = allProducts.hasNextPage ? `/api/products?page=${allProducts.nextPage}` : null;
 
             const result = {
                 status,

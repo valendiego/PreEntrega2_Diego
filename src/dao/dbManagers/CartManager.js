@@ -40,12 +40,13 @@ class CartManager {
     }
     // Agregar un nuevo carrito
     async addCart() {
-        try {
-            await Carts.create({
+        try{
+            const newCart = await Carts.create({
                 products: []
             })
+            return newCart;
         } catch {
-            throw new Error('Error al agregar un nuevo carrito.')
+            throw new Error('Error al agregar un nuevo carrito.');
         }
     }
 

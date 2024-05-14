@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 const schema = new mongoose.Schema({
     firstName: String,
     lastName: String,
-    age: Number,
     email: {
         type: String,
         unique: true,
@@ -13,7 +12,11 @@ const schema = new mongoose.Schema({
     },
     rol: {
         type: String,
-        default: 'usuario'
+        default: 'user'
+    },
+    cart: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Carts'
     }
 })
 
