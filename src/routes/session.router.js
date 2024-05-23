@@ -1,52 +1,27 @@
+require('dotenv').config(); // Carga las variables de entorno desde .env
 const { Router } = require('express'); // Importa la clase Router de Express para definir las rutas
 const router = Router(); // Crea un enrutador
 const passport = require('passport');
+const { Controller } = require('../controller/sessions.controller');
 
-router.post('/login', passport.authenticate('login', { failureRedirect: '/api/sessions/faillogin' }), async (req, res) => {
-    try {
-        req.session.user = { email: req.user.email, _id: req.user._id.toString(), rol: req.user.rol, firstName: req.user.firstName, lastName: req.user.lastName, cart: req.user.cart}
-        res.redirect('/');
-    } catch (err) {
-        res.status(500).json({ error: err.message })
-    }
-});
+router.post('/register', passport.authenticate('register', { failureRedirect: '/api/sessions/failregister', session: false }), (_, res) => new Controller().redirect(res));
 
-router.get('/github', passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => { })
+router.post('/login', passport.authenticate('login', { failureRedirect: '/api/sessions/faillogin', session: false }), async (req, res) => new Controller().login(req, res));
 
-router.get('/githubcallback', passport.authenticate('github', { failureRedirect: '/login' }), async (req, res) => {
-    req.session.user = { email: req.user.email, _id: req.user._id.toString(), rol: req.user.rol, firstName: req.user.firstName, lastName: req.user.lastName, cart: req.user.cart}
-    res.redirect('/');
-})
+router.get('/current', passport.authenticate('current', { session: false }), (req, res) => new Controller().current(req, res));
 
-router.get('/faillogin', (_, res) => {
-    res.send('Hubo un error de logeo.');
-})
+router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
 
-router.post('/resetPassword', passport.authenticate('resetPass', { failureRedirect: '/api/sessions/failogin' }), async (_, res) => {
-    try {
-        res.redirect('/');
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+router.get('/githubcallback', passport.authenticate('github', { session: false, failureRedirect: '/login' }), (req, res) => new Controller().githubCb(req, res));
 
-router.get('/logout', (req, res) => {
-    req.session.destroy(_ => {
-        res.redirect('/');
-    })
-})
+router.post('/resetPassword', passport.authenticate('resetPassword', { failureRedirect: '/api/sessions/failogin' }), async (_, res) => new Controller().redirect(res));
 
-router.post('/register', passport.authenticate('register', { failureRedirect: '/api/sessions/failregister' }), (req, res) => {
-    console.log('Usuario:', req.body);
-    res.redirect('/');
-});
+router.get('/logout', (_, res) => new Controller().logout(res));
 
-router.get('/failregister', (_, res) => {
-    res.send('Hubo un error de registro.');
-})
+router.get('/failregister', (_, res) => new Controller().logError(res));
 
-router.get('/faillogin', (_, res) => {
-    res.send('Hubo un error de logeo.');
-})
+router.get('/faillogin', (_, res) => new Controller().logError(res));
+
+router.delete('/', (req, res) => new Controller().deleteUser(req, res));
 
 module.exports = router;

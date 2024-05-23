@@ -1,6 +1,6 @@
-const { Carts, Products } = require('../models');
+const { Carts, Products } = require('../../models');
 
-class CartManager {
+class daoCart {
 
     constructor() { }
 
@@ -40,13 +40,13 @@ class CartManager {
     }
     // Agregar un nuevo carrito
     async addCart() {
-        try{
+        try {
             const newCart = await Carts.create({
                 products: []
             })
             return newCart;
         } catch {
-            throw new Error('Error al agregar un nuevo carrito.');
+            throw new Error('Error al agregar un nuevo carrito.')
         }
     }
 
@@ -75,10 +75,7 @@ class CartManager {
     // Agregar productos al carrito
     async addProductToCart(productId, cartId) {
         try {
-
-            const product = await this.verifyProductExists(productId);
-            console.log(product);
-
+            await this.verifyProductExists(productId);
             const cart = await this.verifyCartExists(cartId);
 
             // Verificar si el producto ya está en el carrito
@@ -104,14 +101,9 @@ class CartManager {
 
     async deleteProductFromCart(productId, cartId) {
         try {
-
-            const product = await this.verifyProductExists(productId);
-            console.log(product);
-
+            await this.verifyProductExists(productId);
             const cart = await this.verifyCartExists(cartId);
-
             await cart.updateOne({ $pull: { products: { product: productId } } });
-
             console.log(`Se eliminó el producto ${productId} del carrito ${cartId}`);
         } catch (error) {
             console.error('Error al eliminar el producto del carrito:', error);
@@ -176,28 +168,21 @@ class CartManager {
 
     async clearCart(cartId) {
         try {
-
-            const cart = await this.verifyCartExists(cartId);
-            console.log(cart);
-
+            await this.verifyCartExists(cartId);
             await Carts.updateOne({ _id: cartId }, { $set: { products: [] } });
-
         } catch {
             throw new Error('Hubo un error al vaciar el carrito.')
         }
     }
 
-    async deleteCart(cartId) {
+    async deleteCartById(cartId) {
         try {
-            const cart = await this.verifyCartExists(cartId);
-            console.log(cart);
-
+            await this.verifyCartExists(cartId);
             await Carts.deleteOne({ _id: cartId });
         } catch {
-            throw new Error('Hubo un error al eliminar el carrito.')
+            throw new Error('Hubo un problema al eliminar el carrito');
         }
     }
-
 };
 
-module.exports = CartManager;
+module.exports = daoCart;

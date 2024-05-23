@@ -1,6 +1,7 @@
-const { Products } = require('../models');
+const { Products } = require('../../models');
+const { ProductService } = require('../../services/Products.services');
 
-class ProductManager {
+class daoProducts {
 
     constructor() { }
 
@@ -14,28 +15,17 @@ class ProductManager {
 
     async getProducts(page, limit, sort, category, availability) {
         try {
-            const query = {
-                ...(category && { category: category }),
-                ...(availability && { status: availability === 'true' })
-            };
-
-            // Configurar el límite de la consulta según el parámetro
-            const options = {
-                limit: limit ? parseInt(limit) : 1000,
-                page: parseInt(page),
-                sort: sort ? { price: sort } : undefined,
-                lean: true
-            };
+            const { query, options } = await new ProductService().validateAndFormatGetProductsParams(page, limit, sort, category, availability);
 
             const allProducts = await Products.paginate(query, options);
 
-            if (isNaN(page) || page > allProducts.totalPages) {
+            if (page > allProducts.totalPages) {
                 throw new Error('La página no existe');
             }
 
             const status = allProducts ? 'success' : 'error';
-            const prevLink = allProducts.hasPrevPage ? `/api/products?page=${allProducts.prevPage}` : null;
-            const nextLink = allProducts.hasNextPage ? `/api/products?page=${allProducts.nextPage}` : null;
+            const prevLink = allProducts.hasPrevPage ? `/products?page=${allProducts.prevPage}` : null;
+            const nextLink = allProducts.hasNextPage ? `/products?page=${allProducts.nextPage}` : null;
 
             const result = {
                 status,
@@ -76,37 +66,22 @@ class ProductManager {
 
     // Agregar un nuevo producto
     async addProduct(title, description, price, thumbnail, code, status, stock, category) {
-        // Validaciones y asignaciones de valores predeterminados
-
-        const invalidOptions = isNaN(+price) || +price <= 0 || isNaN(+stock) || +stock < 0;
-
-        if (!title || !description || !code || !category || invalidOptions) {
-            throw new Error('Error al validar los datos');
-        };
-
-        const finalThumbnail = thumbnail ? thumbnail : 'Sin Imagen';
-
-        // Si no se carga nada en este parámetro se generará como true por defecto
-        if (typeof status === 'undefined' || status === true || status === 'true') {
-            status = true;
-        } else {
-            status = false;
-        }
+        const product = await new ProductService().validateAndFormatAddProduct(title, description, price, thumbnail, code, status, stock, category);
 
         try {
-            const product = await Products.create({
-                title,
-                description,
-                price,
-                thumbnail: finalThumbnail,
-                code,
-                status,
-                stock,
-                category
+            const newProduct = await Products.create({
+                title: product.title,
+                description: product.description,
+                price: product.price,
+                thumbnail: product.thumbnail,
+                code: product.code,
+                status: product.status,
+                stock: product.stock,
+                category: product.category
             });
 
             console.log('Producto agregado correctamente');
-            return product
+            return newProduct
         } catch (error) {
             console.error('Error al agregar el producto desde DB:', error);
             throw new Error('Error al agregar el producto desde DB');
@@ -145,4 +120,4 @@ class ProductManager {
     }
 }
 
-module.exports = ProductManager;
+module.exports = daoProducts;

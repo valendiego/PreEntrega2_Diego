@@ -1,74 +1,16 @@
 const { Router } = require('express');
 const router = Router();
+const { Controller } = require('../controller/sessionsView.controller');
+const { verifyToken } = require('../utils/jwt');
 
-router.get('/', (req, res) => {
-    const isLoggedIn = ![null, undefined].includes(req.session.user);
+router.get('/', verifyToken, (req, res) => new Controller().index(req, res));
 
-    res.render('sessionStart', {
-        titlePage: 'Login/Register',
-        isLoggedIn,
-        isNotLoggedIn: !isLoggedIn,
-        style: ['styles.css']
-    });
-})
+router.get('/login', (_, res) => new Controller().login(res));
 
-router.get('/login', (_, res) => {
-    // TODO: agregar middleware, sólo se puede acceder si no está logueado
-    res.render('login', {
-        style: ['styles.css'],
-        title: 'Login'
-    });
-});
+router.get('/register', (_, res) => new Controller().register(res));
 
-router.get('/register', (_, res) => {
-    // TODO: agregar middleware, sólo se puede acceder si no está logueado
-    res.render('register', {
-        style: ['styles.css'],
-        title: 'Register'
-    });
-});
+router.get('/profile', verifyToken, (req, res) => new Controller().profile(req, res));
 
-router.get('/profile', async (req, res) => {
-    try {
-        const isLoggedIn = ![null, undefined].includes(req.session.user);
-        if (isLoggedIn) {
-            const user = {
-                firstName: req.session.user.firstName,
-                lastName: req.session.user.lastName,
-                email: req.session.user.email,
-                rol: req.session.user.rol,
-            }
-            
-            res.render('profile', {
-                style: ['styles.css'],
-                titlePage: 'Perfil',
-                user: {
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.email,
-                    rol: user.rol
-                }, isLoggedIn
-
-            });
-
-        } else {
-            return res.status(403).json({ Error: 'Debe logearse para poder acceder.' })
-        }
-    } catch (err) {
-        res.status(500).json({ Error: err.message })
-    }
-});
-
-router.get('/resetPassword', async (_, res) => {
-    try {
-
-        res.render('reset-password', {
-            titlePage: 'Reset Password',
-            style: ['styles.css']
-        });
-    } catch (err) {
-        res.status(500).json({ Error: err.message });
-    }
-})
+router.get('/resetPassword', (_, res) => new Controller().resetPassword(res))
 
 module.exports = router;
