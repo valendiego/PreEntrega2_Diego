@@ -1,3 +1,7 @@
+<h1>Productos</h1>
+    {{#if isLoggedIn}}
+    <h3>Hola {{firstName}} {{lastName}}</h3>
+{{/if}}
 <p>Página actual: {{products.page}}</p>
 <div class="container home">
     {{#each products.payload}}
@@ -9,7 +13,7 @@
             <p class="card-text">Descripción: {{this.description}}</p>
             <p class="card-text">Stock: {{this.stock}}</p>
             <p class="card-text">ID: {{this._id}}</p>
-            <a href="http://localhost:8080/api/products/{{this._id}}">Ver</a>
+            <a href="http://localhost:8080/products/{{this._id}}">Ver</a>
         </div>
     </div>
     {{/each}}
@@ -22,4 +26,37 @@
         <a href="{{products.nextLink}}">Siguiente</a>
         {{/if}}
     </div>
+
+    <form id="urlFilter" class="filter">
+        <label>
+            Ordenar por:
+            <select name="sort">
+                <option value="">Sin Orden</option>
+                <option value="asc">Menor Precio</option>
+                <option value="desc">Mayor Precio</option>
+            </select>
+        </label>
+        <label>
+            Categoría:
+            <select name="category">
+                <option value="">Todas las categorías</option>
+                <option value="celulares">Celulares</option>
+                <option value="laptops">Laptops</option>
+                <option value="auriculares">Auriculares</option>
+                <option value="camaras">Cámaras</option>
+                <option value="relojes">Relojes</option>
+                <option value="impresoras">Impresoras</option>
+                <option value="monitores">Monitores</option>
+            </select>
+        </label>
+        <label>
+            Disponibilidad:
+            <input type="checkbox" name="availability" value="true"> Disponible
+        </label>
+        <label>
+            Productos por página:
+            <input type="number" max="20" min="1" name="limit" value="10">
+        </label>
+        <button type="submit">Buscar</button>
+    </form>
 </div>
