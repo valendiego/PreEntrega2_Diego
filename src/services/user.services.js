@@ -8,7 +8,6 @@ class UserService {
             _id: 'admin',
             firstName: 'Luciano',
             lastName: 'Staniszewski',
-            age: 18,
             email: process.env.ADMIN_USER,
             password: process.env.ADMIN_PASS,
             rol: 'admin',
@@ -17,9 +16,8 @@ class UserService {
 
         this.superAdminUser = {
             _id: 'superAdmin',
-            firstName: 'Federico',
-            lastName: 'Di Iorio',
-            age: 28,
+            firstName: 'Valentina',
+            lastName: 'Diego',
             email: process.env.SADMIN_USER,
             password: process.env.SADMIN_PASS,
             rol: 'superAdmin',
@@ -33,24 +31,19 @@ class UserService {
         }
     }
 
-    #validateRegistrationData(age, email, password) {
+    #validateRegistrationData(email, password) {
         this.validateLoginCredentials(email, password)
-        if (age <= 0) {
-            throw new Error('La edad debe ser mayor a 1');
-        }
     }
 
-    async generateNewUser(firstName, lastName, age, email, password, cart) {
-        this.#validateRegistrationData(age, email, password);
+    async generateNewUser(firstName, lastName, email, password, cart) {
+        this.#validateRegistrationData(email, password);
         const firstNameManager = firstName || 'Usuario';
         const lastNameManager = lastName || 'Sin Identificar';
-        const numericAge = age ? parseInt(age) : "";
         const hashedPassword = hashPassword(password);
 
         const user = {
             firstName: firstNameManager,
             lastName: lastNameManager,
-            age: numericAge,
             email,
             password: hashedPassword,
             cart

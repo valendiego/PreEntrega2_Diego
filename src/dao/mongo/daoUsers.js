@@ -46,7 +46,7 @@ class daoUsers {
 
     }
 
-    async registerUser(firstName, lastName, age, email, password) {
+    async registerUser(firstName, lastName, email, password) {
         try {
 
             if (email === this.userService.adminUser.email || email === this.userService.superAdminUser.email) {
@@ -60,7 +60,7 @@ class daoUsers {
 
             const cart = await new daoCarts().addCart();
 
-            const user = await this.userService.generateNewUser(firstName, lastName, age, email, password, cart)
+            const user = await this.userService.generateNewUser(firstName, lastName, email, password, cart)
 
             const newUser = Users.create(user);
             return newUser;
@@ -115,10 +115,9 @@ class daoUsers {
                 const fullName = profile._json.name;
                 const firstName = fullName.substring(0, fullName.lastIndexOf(' '));
                 const lastName = fullName.substring(fullName.lastIndexOf(' ') + 1);
-                const age = 18;
                 const password = '123';
 
-                const newUser = await this.registerUser(firstName, lastName, age, profile._json.email, password);
+                const newUser = await this.registerUser(firstName, lastName, profile._json.email, password);
                 const accessToken = this.userService.generateAccessToken(newUser);
 
                 return { accessToken, user: newUser };

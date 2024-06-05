@@ -1,5 +1,5 @@
 const { Products } = require('../../models');
-const { ProductService } = require('../../services/Products.services');
+const { ProductService } = require('../../services/products.services');
 
 class daoProducts {
 

@@ -38,7 +38,6 @@ class Controller {
                     rol: req.user.rol,
                     firstName: req.user.firstName,
                     lastName: req.user.lastName,
-                    age: req.user.age,
                     cart: req.user.cart ? req.user.cart._id : null
                 };
             }
@@ -55,7 +54,6 @@ class Controller {
             const user = {
                 firstName: req.user.firstName,
                 lastName: req.user.lastName,
-                age: req.user.age,
                 email: req.user.email,
                 rol: req.user.rol,
                 cart: req.user.cart

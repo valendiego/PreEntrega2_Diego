@@ -63,7 +63,6 @@ class Controller {
                 const user = {
                     firstName: req.user.firstName,
                     lastName: req.user.lastName,
-                    age: req.user.age,
                     email: req.user.email,
                     rol: req.user.rol,
                 }
@@ -74,7 +73,6 @@ class Controller {
                     user: {
                         firstName: user.firstName,
                         lastName: user.lastName,
-                        age: user.age,
                         email: user.email,
                         rol: user.rol
                     },
