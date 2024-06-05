@@ -1,32 +1,11 @@
-<h1>Productos</h1>
+<div class="container__header">
+    <h1>Productos</h1>
     {{#if isLoggedIn}}
-    <h3>Hola {{firstName}} {{lastName}}</h3>
-{{/if}}
-<p>Página actual: {{products.page}}</p>
-<div class="container home">
-    {{#each products.payload}}
-    <div class="card" style="width: 18rem;">
-        <img src="{{this.thumbnail}}" class="card-img-top" alt="{{this.title}}">
-        <div class="cart-body">
-            <h4 class="card-title">{{this.title}}</h4>
-            <p class="card-text">Precio: {{this.price}}</p>
-            <p class="card-text">Descripción: {{this.description}}</p>
-            <p class="card-text">Stock: {{this.stock}}</p>
-            <p class="card-text">ID: {{this._id}}</p>
-            <a href="http://localhost:8080/products/{{this._id}}">Ver</a>
-        </div>
-    </div>
-    {{/each}}
-    <div class="container">
-        {{#if products.hasPrevPage}}
-        <a href="{{products.prevLink}}">Anterior</a>
-        {{/if}}
+    <h3>¡Hola, {{firstName}} {{lastName}}!</h3>
+    {{/if}}
+</div>
 
-        {{#if products.hasNextPage}}
-        <a href="{{products.nextLink}}">Siguiente</a>
-        {{/if}}
-    </div>
-
+<div class="container__filters">
     <form id="urlFilter" class="filter">
         <label>
             Ordenar por:
@@ -59,4 +38,33 @@
         </label>
         <button type="submit">Buscar</button>
     </form>
+</div>
+
+<div class="container products">
+    {{#each products.payload}}
+    <div class="card" style="width: 18rem;">
+        <img src="{{this.thumbnail}}" class="card-img-top" alt="{{this.title}}">
+        <div class="cart-body">
+            <h4 class="card-title">{{this.title}}</h4>
+            <p class="card-text">Precio: {{this.price}}</p>
+            <p class="card-text">Descripción: {{this.description}}</p>
+            <p class="card-text">Stock: {{this.stock}}</p>
+            <p class="card-text">ID: {{this._id}}</p>
+            <a href="http://localhost:8080/products/{{this._id}}">Ver</a>
+        </div>
+    </div>
+
+
+    {{/each}}
+    <div class="container pages">
+        {{#if products.hasPrevPage}}
+        <p>Página actual: {{products.page}}</p>
+        <a href="{{products.prevLink}}">Anterior</a>
+        {{/if}}
+
+        {{#if products.hasNextPage}}
+        <p>Página actual: {{products.page}}</p>
+        <a href="{{products.nextLink}}">Siguiente</a>
+        {{/if}}
+    </div>
 </div>
