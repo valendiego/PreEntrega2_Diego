@@ -89,7 +89,7 @@ class Controller {
 
     resetPassword(res) {
         try {
-            res.render('sendMailToResetPassword', {
+            res.render('mailResetPassword', {
                 titlePage: 'Send Token',
                 style: ['styles.css']
             });

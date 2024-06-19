@@ -22,9 +22,9 @@ class MailingService {
             });
 
             await transport.sendMail({
-                from: 'Servicio Backend App',
+                from: 'Servicio Tech Store App',
                 to: email,
-                subject: 'BackendApp | Restablecer contraseña',
+                subject: 'Tech Store App | Restablecer contraseña',
                 html: `
             <div>
                 <h2>Ingrese al link para poder restablecer su contraseña</h2>

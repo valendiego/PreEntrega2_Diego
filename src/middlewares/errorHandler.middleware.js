@@ -48,9 +48,6 @@ const errorHandler = (error, req, res, next) => {
         case ErrorCodes.INVALID_CREDENTIALS:
             res.status(401).send({ status: 'Error', error: error.name, cause: error.cause });
             break;
-        case ErrorCodes.AGE_VALIDATION_ERROR:
-            res.status(400).send({ status: 'Error', error: error.name, cause: error.cause });
-            break;
         case ErrorCodes.EMAIL_ALREADY_REGISTERED:
             res.status(409).send({ status: 'Error', error: error.name, cause: error.cause });
             break;

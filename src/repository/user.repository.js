@@ -24,7 +24,6 @@ class UserRepository {
             _id: 'admin',
             firstName: 'Luciano',
             lastName: 'Staniszewski',
-            age: 20,
             email: process.env.ADMIN_USER,
             password: process.env.ADMIN_PASS,
             rol: 'admin',
@@ -34,7 +33,6 @@ class UserRepository {
             _id: 'superAdmin',
             firstName: 'Valentina',
             lastName: 'Diego',
-            age: 20,
             email: process.env.SADMIN_USER,
             password: process.env.SADMIN_PASS,
             rol: 'superAdmin',
@@ -90,7 +88,7 @@ class UserRepository {
         });
     }
 
-    async registerUser(firstName, lastName, age, email, password) {
+    async registerUser(firstName, lastName, email, password) {
         try {
             if (email === this.#adminUser.email || email === this.#superAdminUser.email) {
                 throw CustomError.createError({
@@ -112,7 +110,7 @@ class UserRepository {
             }
 
             const cart = await this.#cartDAO.addCart({ products: [] });
-            const user = await this.#generateNewUser(firstName, lastName, age, email, password, cart);
+            const user = await this.#generateNewUser(firstName, lastName, email, password, cart);
 
             return await this.#userDAO.create(user);
         } catch (error) {
@@ -259,10 +257,9 @@ class UserRepository {
                 const fullName = profile._json.name;
                 const firstName = fullName.substring(0, fullName.lastIndexOf(' '));
                 const lastName = fullName.substring(fullName.lastIndexOf(' ') + 1);
-                const age = 18;
                 const password = '123';
 
-                const newUser = await this.registerUser(firstName, lastName, age, profile._json.email, password);
+                const newUser = await this.registerUser(firstName, lastName, profile._json.email, password);
                 const accessToken = this.#generateAccessToken(newUser);
 
                 return { accessToken, user: newUser };

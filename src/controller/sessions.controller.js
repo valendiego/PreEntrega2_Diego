@@ -10,8 +10,8 @@ class Controller {
 
     async registerUser(req, res) {
         try {
-            const { firstName, lastName, age, email, password } = req.body;
-            const user = await this.#userRepository.registerUser(firstName, lastName, age, email, password);
+            const { firstName, lastName, email, password } = req.body;
+            const user = await this.#userRepository.registerUser(firstName, lastName, email, password);
             req.logger.info('Usuario registrado')
             res.status(201).json(user);
         } catch (error) {
