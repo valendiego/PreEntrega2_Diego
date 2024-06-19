@@ -1,5 +1,5 @@
 const passport = require('passport');
-const UserManager = require('../dao/mongo/daoUsers');
+const { UserRepository } = require('../repository/user.repository');
 const { localStrategy, githubStrategy, jwtStrategy } = require('./strategies');
 
 const initializeStrategy = () => {
@@ -15,7 +15,7 @@ const initializeStrategy = () => {
 
     passport.deserializeUser(async (id, done) => {
         console.log('Deserialized: ', id)
-        const user = await new UserManager().getUser(id);
+        const user = await new UserRepository().getUserById(id);
         done(null, user)
     })
 }

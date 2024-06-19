@@ -1,15 +1,15 @@
 const passport = require('passport');
 const { Strategy } = require('passport-github2');
-const { verifyToken } = require('../../utils/jwt');
+const { verifyToken } = require('../../middlewares/jwt.middleware');
 const { clientID, clientSecret, callbackURL } = require('../github.private');
-const UserManager = require('../../dao/mongo/daoUsers');
+const { UserRepository } = require('../../repository/user.repository');
 
 const githubStrategy = () => {
 
     passport.use('github', new Strategy({ clientID, clientSecret, callbackURL },
         async (_accessToken, _refreshToken, profile, done) => {
             try {
-                const { accessToken, user } = await new UserManager().githubLogin(profile);
+                const { accessToken, user } = await new UserRepository().githubLogin(profile);
 
                 verifyToken({ cookies: { accessToken } }, null, (err) => {
                     if (err) {

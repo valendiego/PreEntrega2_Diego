@@ -1,7 +1,11 @@
-const daoProducts = require('../dao/mongo/daoProducts');
+// const daoProducts = require('../dao/mongo/products.dao');
+const { ProductRepository } = require('../repository/products.repository');
 
 class Controller {
-    constructor() { }
+    #productRepository
+    constructor() {
+        this.#productRepository = new ProductRepository();
+    }
 
     viewForm(req, res) {
         try {
@@ -22,24 +26,23 @@ class Controller {
                 script: ['createProduct.js'],
                 isLoggedIn
             });
-        } catch (e) {
-            res.status(500).json({ error: ee.message })
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error })
         }
     }
 
     async addProduct(req, res) {
         try {
 
-            // Obtener los datos del producto del cuerpo de la solicitud
-            const { title, description, price, thumbnail, code, status, stock } = req.body;
-
-            // Agregar el nuevo producto al archivo
-            await new daoProducts().addProduct(title, description, price, thumbnail, code, status, stock);
-
+            const { title, description, price, thumbnail, code, status, stock, category } = req.body;
+            const owner = req.user.email;
+            await this.productRepository.addProduct({ title, description, price, thumbnail, code, status, stock, category, owner });
+            req.logger.info('Producto creado de manera correcta');
             res.status(301).redirect('/products');
         } catch (error) {
-            console.error(error);
-            res.status(500).send('Error interno del servidor');
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 }

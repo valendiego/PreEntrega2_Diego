@@ -1,95 +1,145 @@
-require('dotenv').config(); // Carga las variables de entorno desde .env
-const { Router } = require('express');
-const router = Router();
-const { generateToken } = require('../utils/jwt');
-const cookieParser = require('cookie-parser');
-const daoUsers = require('../dao/mongo/daoUsers');
-
-router.use(cookieParser());
+const { UserRepository } = require('../repository/user.repository');
 
 class Controller {
-    constructor() { }
 
-    redirect(res) {
+    #userRepository
+
+    constructor() {
+        this.#userRepository = new UserRepository();
+    }
+
+    async registerUser(req, res) {
         try {
+            const { firstName, lastName, age, email, password } = req.body;
+            const user = await this.#userRepository.registerUser(firstName, lastName, age, email, password);
+            req.logger.info('Usuario registrado')
+            res.status(201).json(user);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
+        }
+    }
+
+    async loginUser(req, res) {
+        try {
+            const { email, password } = req.body;
+            req.logger.debug(password);
+            const user = await this.#userRepository.loginUser(email, password);
+            res.cookie('accessToken', user.accessToken, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
+            req.logger.info('Usuario identificado')
             res.redirect('/');
-        } catch (e) {
-            res.status(500).json({ error: e.message });
+        } catch (error) {
+            req.logger.error(error);
+            res.status(401).json({ error });
         }
     }
 
-    logError(res) {
+    async sendMailToResetPassword(req, res) {
         try {
-            res.send('Hubo un error al identificar sus credenciales.');
-        } catch (e) {
-            res.status(500).json({ error: e.message });
+            const { email } = req.body;
+            const tokenPass = await this.#userRepository.sendMailToResetPassword(email);
+            res.cookie('passToken', tokenPass, { maxAge: 60 * 60 * 1000, httpOnly: true });
+            res.redirect('/resetPasswordWarning');
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error })
         }
     }
 
-    login(req, res) {
+    async resetPassword(req, res) {
         try {
-            let user;
-            if (req.user && req.user.email === process.env.ADMIN_USER) {
-                user = req.user;
-            } else {
-                user = {
-                    email: req.user.email,
-                    _id: req.user._id.toString(),
-                    rol: req.user.rol,
-                    firstName: req.user.firstName,
-                    lastName: req.user.lastName,
-                    cart: req.user.cart ? req.user.cart._id : null
-                };
+            const urlToken = req.params.tid
+            const { newPassword, confirmPassword } = req.body;
+            const cookieToken = req.cookies.passToken;
+            if (!cookieToken) {
+                return res.redirect('/resetPassword');
             }
-            const accessToken = generateToken(user);
-            res.cookie('accessToken', accessToken, { maxAge: 60 * 5 * 1000, httpOnly: true });
-            res.redirect('/');
-        } catch (e) {
-            res.status(500).json({ error: e.message });
+            const updatePassword = await this.#userRepository.resetPassword(urlToken, cookieToken, newPassword, confirmPassword);
+            res.clearCookie('passToken');
+            if (updatePassword) {
+                return res.redirect('/');
+            }
+            return res.redirect('/login');
+        } catch (error) {
+            req.logger.error(error);
+            return res.status(500).json({ error });
         }
     }
 
-    current(req, res) {
+    async githubLogin(req, res) {
         try {
-            const user = {
-                firstName: req.user.firstName,
-                lastName: req.user.lastName,
-                email: req.user.email,
-                rol: req.user.rol,
-                cart: req.user.cart
-            }
-            res.json(user);
-        } catch (e) {
-            res.status(500).json({ error: e.message });
+            const profile = req.user;
+            const { accessToken, user } = await this.#userRepository.githubLogin(profile);
+            req.logger.info('Usuario identificado')
+            res.status(200).json({ accessToken, user });
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
     githubCb(req, res) {
         try {
-            // Envía el token JWT al cliente
             res.cookie('accessToken', req.user.accessToken, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
             res.redirect('/');
-        } catch (err) {
-            res.status(500).json({ error: err.message });
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
-    logout(res) {
+    logout(req, res) {
         try {
-            res.clearCookie('accessToken'); // Elimina la cookie llamada 'accessToken'
+            res.clearCookie('accessToken');
+            req.logger.info('Sesión finalizada');
             res.redirect('/');
-        } catch (e) {
-            res.status(500).json({ error: e.message });
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
+        }
+    }
+
+    redirect(res) {
+        try {
+            res.redirect('/');
+        } catch (error) {
+            res.status(500).json({ error });
         }
     }
 
     async deleteUser(req, res) {
         try {
             const { email } = req.body;
-            await new daoUsers().deleteUser(email);
-            res.json({ message: 'Usuario eliminado correctamente.' });
-        } catch (e) {
-            res.status(500).json({ error: e.message });
+            await this.#userRepository.deleteUser(email);
+            res.logger.info('Usuario eliminado correctamente');
+            res.status(200).json({ message: 'User deleted successfully' });
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
+        }
+    }
+
+    async current(req, res) {
+        try {
+            const user = req.user
+            req.logger.info(JSON.stringify(user, null, 2));
+            res.json(user);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
+        }
+    }
+
+    async changeRole(req, res) {
+        try {
+            const uid = req.params.uid;
+            const user = await this.#userRepository.changeRole(uid);
+            req.logger.info(`Rol del usuario actualizado a ${user.rol}`);
+            res.clearCookie('accessToken');
+            return res.json(user);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 }

@@ -1,14 +1,20 @@
-const daoCarts = require('../dao/mongo/daoCarts');
+const { CartRepository } = require('../repository/carts.repository');
 
 class Controller {
-    constructor() { }
+
+    #cartRepository
+
+    constructor() {
+        this.#cartRepository = new CartRepository();
+    }
 
     async getCartById(req, res) {
         try {
             const isLoggedIn = req.cookies.accessToken !== undefined;
 
+
             const cartId = req.user.cart; // Obtiene el ID del carrito de los parámetros de la solicitud
-            const cart = await new daoCarts().getCartById(cartId); // Obtiene el carrito por su ID
+            const cart = await this.#cartRepository.getCartById(cartId); // Obtiene el carrito por su ID
 
             const cartData = {
                 id: cart.id,
@@ -31,6 +37,20 @@ class Controller {
 
         } catch (err) {
             res.status(500).json({ Error: err.message }); // Responde con un error 500 si hay un error al obtener el carrito
+        }
+    }
+
+    async addProductToCart(req, res) {
+        try {
+            const cartId = req.params.cid;
+            const productId = req.params.pid;
+            const user = req.user;
+            const cart = await this.#cartRepository.addProductToCart(productId, cartId, user);
+            req.logger.info('Producto agregado al carrito de manera correcta');
+            res.redirect('/products');
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 }

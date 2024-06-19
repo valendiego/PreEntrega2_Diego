@@ -89,9 +89,40 @@ class Controller {
 
     resetPassword(res) {
         try {
-            res.render('reset_password', {
-                titlePage: 'Reset Password',
+            res.render('sendMailToResetPassword', {
+                titlePage: 'Send Token',
                 style: ['styles.css']
+            });
+        } catch (err) {
+            res.status(500).json({ Error: err.message });
+        }
+    }
+
+    resetPasswordWarning(req, res) {
+        try {
+            const passToken = req.cookies.passToken !== undefined;
+            res.render('resetPasswordWarning', {
+                titlePage: 'Reset Password',
+                style: ['styles.css'],
+                passToken,
+                notPassToken: !passToken
+            });
+        } catch (err) {
+            res.status(500).json({ Error: err.message });
+        }
+    }
+
+    verifyResetPassword(req, res) {
+        try {
+            const tid = req.params.tid;
+            const passToken = req.cookies.passToken;
+            if (!passToken) {
+                return res.redirect('/resetPasswordWarning');
+            }
+            return res.render('resetPassword', {
+                titlePage: 'Reset Password',
+                style: ['styles.css'],
+                tid
             });
         } catch (err) {
             res.status(500).json({ Error: err.message });

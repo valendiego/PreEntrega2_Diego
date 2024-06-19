@@ -1,7 +1,10 @@
-const daoProducts = require('../dao/mongo/daoProducts');
+const { ProductRepository } = require('../repository/products.repository');
+const { generateProduct } = require('../utils/generateProduct');
 
 class Controller {
-    constructor() { }
+    constructor() {
+        this.productRepository = new ProductRepository();
+    }
 
     async getProducts(req, res) {
         try {
@@ -11,18 +14,19 @@ class Controller {
             const category = req.query.category;
             const availability = req.query.availability;
 
-            const products = await new daoProducts().getProducts(page, limit, sort, category, availability);
-
+            const products = await this.productRepository.getProducts(page, limit, sort, category, availability);
             res.status(200).json(products);
-        } catch (err) {
-            res.status(500).json({ Error: err.message });
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
-    async getProductsById(req, res) {
+    async getProductById(req, res) {
         try {
             const productId = req.params.pid;
-            const product = await new daoProducts().getProductById(productId);
+            const product = await this.productRepository.getProductById(productId);
+            const user = req.user;
 
             const productData = {
                 title: product.title,
@@ -31,56 +35,67 @@ class Controller {
                 price: product.price,
                 stock: product.stock,
                 code: product.code,
-                id: product.id,
+                id: product._id,
+                cart: user.cart
             };
 
             res.status(200).json(productData);
-        } catch (err) {
-            res.status(500).json({ Error: err.message });
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
+        }
+    }
+
+    async getMockingProducts(res) {
+        try {
+            const products = [];
+            for (let i = 0; i < 50; i++) {
+                products.push(generateProduct());
+            }
+            res.json(products);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
     async addProduct(req, res) {
         try {
             const { title, description, price, thumbnail, code, status, stock, category } = req.body;
-            const product = await new daoProducts().addProduct(title, description, price, thumbnail, code, status, stock, category);
-            res.status(200).json({ message: 'Agregado correctamente: ', product });
+            const owner = req.user.email;
+            const product = await this.productRepository.addProduct({ title, description, price, thumbnail, code, status, stock, category, owner });
+            req.logger.info('Producto creado de manera correcta');
+            res.status(200).json(product);
         } catch (error) {
-            res.status(500).json({ Error: error.message });
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
     async updateProduct(req, res) {
         try {
             const productId = req.params.pid;
-            const updatedProduct = await new daoProducts().updateProduct(productId, req.body);
-            res.status(200).json({ message: 'Producto actualizado', updatedProduct });
-        } catch (err) {
-            res.status(500).json({ error: 'Error al actualizar el producto' });
+            const updatedProduct = await this.productRepository.updateProduct(productId, req.body);
+            req.logger.info('Producto actualizado de manera correcta');
+            res.status(200).json(updatedProduct);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
     async deleteProduct(req, res) {
         try {
             const productId = req.params.pid;
-            await new daoProducts().deleteProduct(productId);
+            const user = req.user
+            await this.productRepository.deleteProduct(productId, user);
+            req.logger.info('Producto eliminado de manera correcta')
             res.status(200).json({ message: 'Producto eliminado' });
-        } catch (err) {
-            res.status(500).json({ Error: err.message });
-        }
-    }
-
-    async addProductToCart(req, res) {
-        try {
-            const productId = req.params.pid;
-            const cartId = req.user.cart;
-            const cartManager = req.app.get('cartManager');
-            await cartManager.addProductToCart(productId, cartId)
-            res.status(301).redirect('/products');
-        } catch (err) {
-            res.status(500).json({ Error: err.message })
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 }
 
-module.exports = { Controller }
+module.exports = { Controller };

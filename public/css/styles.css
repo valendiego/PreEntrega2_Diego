@@ -43,14 +43,37 @@
     font-size: 1.3rem;
 }
 
-/* HOME */
-.home{
+/* PRODUCTOS */
+.products{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: self-start;
     gap: 20px;
     padding: 40px;
+}
+
+.container__header{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.container__filters{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.filter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
 }
 
 /* CREAR PRODUCTO */

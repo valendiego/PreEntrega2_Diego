@@ -1,50 +1,41 @@
-const daoCarts = require('../dao/mongo/daoCarts');
+const { CartRepository } = require('../repository/carts.repository');
+const { TicketRepository } = require('../repository/ticket.repository');
 
 class Controller {
-    constructor() { }
+    constructor() {
+        this.cartRepository = new CartRepository();
+        this.ticketRepository = new TicketRepository();
+    }
 
-    async getCarts(res) {
+    async getCarts(req, res) {
         try {
-            const carts = await new daoCarts().getCarts();
-
-            const cartsData = carts.map(c => ({
-                id: c.id,
-                quantity: c.products.length
-            }));
-
-            res.status(200).json(cartsData);
-        } catch (err) {
-            res.status(500).json({ Error: err.message });
+            const carts = await this.cartRepository.getCarts();
+            res.status(200).json(carts);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
     async getCartById(req, res) {
         try {
             const cartId = req.params.cid;
-            const cart = await new daoCarts().getCartById(cartId);
-
-            const cartData = {
-                id: cart.id,
-                products: cart.products.map(p => ({
-                    productId: p.product.id,
-                    title: p.product.title,
-                    code: p.product.code,
-                    quantity: p.quantity
-                }))
-            };
-
-            res.status(200).json(cartData);
-        } catch (err) {
-            res.status(500).json({ Error: err.message });
+            const cart = await this.cartRepository.getCartById(cartId);
+            res.status(200).json(cart);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
-    async addCart(res) {
+    async createCart(res) {
         try {
-            const cart = await new daoCarts().addCart();
-            res.status(200).json({ message: 'Carrito creado con éxito', cart });
-        } catch {
-            res.status(500).json({ error: 'No se pudo crear el carrito' });
+            const cart = await this.cartRepository.addCart();
+            req.logger.info('Carrito creado de manera correcta');
+            res.status(201).json(cart);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
@@ -52,55 +43,93 @@ class Controller {
         try {
             const cartId = req.params.cid;
             const productId = req.params.pid;
-            const updatedCart = await new daoCarts().addProductToCart(productId, cartId);
-            res.status(200).json(updatedCart);
+            const user = req.user;
+            const cart = await this.cartRepository.addProductToCart(productId, cartId, user);
+            req.logger.info('Producto agregado al carrito de manera correcta');
+            res.status(200).json(cart);
         } catch (error) {
-            console.error(error);
-            res.status(500).json({ Error: error.message });
-        }
-    }
-
-    async updatedCart(req, res) {
-        try {
-            const cartId = req.params.cid;
-            const products = req.body;
-            await new daoCarts().updateCart(cartId, products);
-            res.status(200).json({ message: 'Carrito actualizado correctamente.' });
-        } catch (err) {
-            res.status(500).json({ error: err.message });
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
     async deleteProductFromCart(req, res) {
         try {
             const cartId = req.params.cid;
-            const productId = req.params.pid;
-            await new daoCarts().deleteProductFromCart(productId, cartId);
-            res.status(200).json({ message: `Producto ${productId} eliminado del carrito ${cartId} de manera correcta.` });
-        } catch (err) {
-            res.status(500).json({ Error: err.message });
+            const productId = req.params.pid
+            const cart = await this.cartRepository.deleteProductFromCart(productId, cartId);
+            req.logger.info('Producto eliminado del carrito.');
+            res.status(200).json(cart);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
-    async updateProductQuantityFromCart(req, res) {
+    async updateCart(req, res) {
+        try {
+            const cartId = req.params.cid;
+            const products = req.body;
+            const cart = await this.cartRepository.updateCart(cartId, products);
+            req.logger.info('Se ha actualizado el carrito de manera correcta');
+            res.status(200).json(cart);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
+        }
+    }
+
+    async updateProductQuantity(req, res) {
         try {
             const cartId = req.params.cid;
             const productId = req.params.pid;
             const { quantity } = req.body;
-            await new daoCarts().updateProductQuantityFromCart(productId, cartId, quantity);
-            res.status(200).json({ message: `Se actualizó el producto ${productId} en una cantidad de ${quantity} del carrito ${cartId}.` });
-        } catch (err) {
-            res.status(500).json({ Error: err.message });
+            const cart = await this.cartRepository.updateProductQuantity(cartId, productId, quantity);
+            req.logger.info('Se ha actualizado la cantidad de manera correcta');
+            res.status(200).json(cart);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 
     async clearCart(req, res) {
         try {
             const cartId = req.params.cid;
-            await new daoCarts().clearCart(cartId);
-            res.status(200).json({ message: `Carrito ${cartId} vaciado de manera correcta.` });
-        } catch (err) {
-            res.status(500).json({ Error: err.message });
+            const cart = await this.cartRepository.clearCart(cartId);
+            req.logger.info('Se ha vaciado el carrito de manera correcta');
+            res.status(200).json(cart);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
+        }
+    }
+
+    async deleteCartById(req, res) {
+        try {
+            const cartId = req.params.cid;
+            await this.cartRepository.deleteCartById(cartId);
+            req.logger.info('Carrito eliminado');
+            res.status(200).json({ message: 'Carrito eliminado' });
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
+        }
+    }
+
+    async generateTicket(req, res) {
+        try {
+            const { cid } = req.params;
+            const userEmail = req.user.email;
+            const ticket = await this.ticketRepository.generateTicket(cid, userEmail);
+            req.logger.info('Compra finalizada!');
+            res.status(200).json({
+                message: 'Compra realizada con éxito',
+                ticket
+            });
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error });
         }
     }
 }
