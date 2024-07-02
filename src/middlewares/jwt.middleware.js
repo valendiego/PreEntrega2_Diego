@@ -21,12 +21,32 @@ const verifyToken = (req, res, next) => {
 
         req.user = decoded.user;
 
-        if (decoded.user && decoded.user.cart) {
-            req.user.cartId = decoded.user.cart._id;
-        }
-
         next();
     });
 };
 
-module.exports = { generateToken, verifyToken, secret: PRIVATE_KEY };
+const generatePasswordRecoveryToken = (code, email) => {
+    const passwordToken = jwt.sign({ code, email }, PRIVATE_KEY, { expiresIn: '1h' });
+    return passwordToken;
+}
+
+const verifyPasswordToken = (req, res, next) => {
+
+    const passwordRecoveryToken = req.cookies.passToken;
+
+    if (!passwordRecoveryToken) {
+        return res.json({ message: 'No posee los permisos para acceder a esta dirección.' })
+    }
+
+    jwt.verify(passwordRecoveryToken, PRIVATE_KEY, (err, decoded) => {
+        if (err) {
+            return res.status(401).redirect({ error: 'Error, token invalido' });
+        }
+
+        req.passToken = { code: decoded.code, email: decoded.email };
+
+        next();
+    })
+}
+
+module.exports = { generateToken, verifyToken, secret: PRIVATE_KEY, generatePasswordRecoveryToken, verifyPasswordToken };

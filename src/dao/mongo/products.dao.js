@@ -20,6 +20,10 @@ class ProductDAO {
     async deleteProduct(id) {
         return await Products.deleteOne({ _id: id });
     }
+
+    async findByCode(code) {
+        return await Products.findOne({ code });
+    }
 }
 
 module.exports = ProductDAO;

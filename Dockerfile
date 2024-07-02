@@ -10,9 +10,6 @@ COPY package*.json ./
 # Instalar las dependencias de node
 RUN npm install
 
-# Reconstruir bcrypt desde el origen
-RUN npm rebuild bcrypt --build-from-source
-
 # Copiar nuestro código adentro
 COPY . .
 

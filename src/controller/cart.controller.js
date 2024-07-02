@@ -13,7 +13,7 @@ class Controller {
             res.status(200).json(carts);
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -24,18 +24,18 @@ class Controller {
             res.status(200).json(cart);
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
-    async createCart(res) {
+    async createCart(req, res) {
         try {
             const cart = await this.cartRepository.addCart();
             req.logger.info('Carrito creado de manera correcta');
             res.status(201).json(cart);
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -49,7 +49,7 @@ class Controller {
             res.status(200).json(cart);
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -62,7 +62,7 @@ class Controller {
             res.status(200).json(cart);
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -75,7 +75,7 @@ class Controller {
             res.status(200).json(cart);
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -89,7 +89,7 @@ class Controller {
             res.status(200).json(cart);
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -101,19 +101,7 @@ class Controller {
             res.status(200).json(cart);
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
-        }
-    }
-
-    async deleteCartById(req, res) {
-        try {
-            const cartId = req.params.cid;
-            await this.cartRepository.deleteCartById(cartId);
-            req.logger.info('Carrito eliminado');
-            res.status(200).json({ message: 'Carrito eliminado' });
-        } catch (error) {
-            req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -129,7 +117,7 @@ class Controller {
             });
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 }

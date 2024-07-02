@@ -22,13 +22,13 @@ class MailingService {
             });
 
             await transport.sendMail({
-                from: 'Servicio Tech Store App',
+                from: 'Asistente de Tech Store',
                 to: email,
-                subject: 'Tech Store App | Restablecer contraseña',
+                subject: 'Tech Store | Restablecer contraseña',
                 html: `
             <div>
-                <h2>Ingrese al link para poder restablecer su contraseña</h2>
-                <h4>Tenga en cuenta que el link de restablecimiento tiene una duración de una hora. Si este plazo se vence deberá generar un nuevo link.</h4>
+                <h2>Ingrese al siguiente link para restablecer su contraseña.</h2>
+                <h4>Tenga en cuenta que el link de restablecimiento vence en una hora. Si este plazo se vence deberá generar un nuevo link.</h4>
                 <a href="http://localhost:8080/resetPassword/${randomNumber}">Restablecer contraseña</a>
             </div>`,
                 attachments: []
@@ -39,7 +39,8 @@ class MailingService {
                 name: 'Error al restablecer contraseña',
                 cause: 'Ocurrió un error y no se pudo enviar el email al destinatario.',
                 message: 'No se pudo enviar el email',
-                code: ErrorCodes.UNDEFINED_USER
+                code: ErrorCodes.UNDEFINED_USER,
+                status: 404
             })
         }
     }

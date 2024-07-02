@@ -16,21 +16,20 @@ class Controller {
             res.status(201).json(user);
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
     async loginUser(req, res) {
         try {
             const { email, password } = req.body;
-            req.logger.debug(password);
             const user = await this.#userRepository.loginUser(email, password);
             res.cookie('accessToken', user.accessToken, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
-            req.logger.info('Usuario identificado')
+            req.logger.info('Usuario identificado');
             res.redirect('/');
         } catch (error) {
             req.logger.error(error);
-            res.status(401).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -39,30 +38,34 @@ class Controller {
             const { email } = req.body;
             const tokenPass = await this.#userRepository.sendMailToResetPassword(email);
             res.cookie('passToken', tokenPass, { maxAge: 60 * 60 * 1000, httpOnly: true });
+            req.logger.info('Email enviado');
             res.redirect('/resetPasswordWarning');
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error })
+            res.status(error.status).json({ error })
         }
     }
 
     async resetPassword(req, res) {
         try {
             const urlToken = req.params.tid
+            const token = req.passToken;
             const { newPassword, confirmPassword } = req.body;
-            const cookieToken = req.cookies.passToken;
-            if (!cookieToken) {
+            if (!token) {
+                req.logger.info('El token ha expirado');
                 return res.redirect('/resetPassword');
             }
-            const updatePassword = await this.#userRepository.resetPassword(urlToken, cookieToken, newPassword, confirmPassword);
+            const updatePassword = await this.#userRepository.resetPassword(urlToken, token, newPassword, confirmPassword);
             res.clearCookie('passToken');
-            if (updatePassword) {
+            if (!updatePassword) {
+                req.logger.info('No se pudo actualizar la contraseña');
                 return res.redirect('/');
             }
+            req.logger.info('Contraseña actualizada');
             return res.redirect('/login');
         } catch (error) {
             req.logger.error(error);
-            return res.status(500).json({ error });
+            return res.status(error.status).json({ error });
         }
     }
 
@@ -74,7 +77,7 @@ class Controller {
             res.status(200).json({ accessToken, user });
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -84,7 +87,7 @@ class Controller {
             res.redirect('/');
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -95,7 +98,7 @@ class Controller {
             res.redirect('/');
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -103,7 +106,7 @@ class Controller {
         try {
             res.redirect('/');
         } catch (error) {
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -115,7 +118,7 @@ class Controller {
             res.status(200).json({ message: 'User deleted successfully' });
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -126,7 +129,7 @@ class Controller {
             res.json(user);
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 
@@ -139,7 +142,7 @@ class Controller {
             return res.json(user);
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 }

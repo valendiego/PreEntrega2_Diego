@@ -78,6 +78,9 @@ const errorHandler = (error, req, res, next) => {
         case ErrorCodes.UNDEFINED_USER:
             res.status(404).send({ status: 'Error', error: error.name, cause: error.cause });
             break;
+        case ErrorCodes.DUPLICATE_PRODUCT_CODE:
+            res.status(409).send({ status: 'Error', error: error.name, cause: error.cause });
+            break;
         default:
             res.status(500).send({ status: 'Error', error: 'Desconocido' });
     }

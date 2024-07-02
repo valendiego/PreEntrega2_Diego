@@ -41,5 +41,10 @@ const prodLogger = winston.createLogger({
 });
 
 const logger = process.env.LOGGER_ENV === 'production' ? prodLogger : devLogger;
+if (process.env.LOGGER_ENV === 'production') {
+    console.log('Cargando el proyecto en modo de producción');
+} else {
+    console.log('Cargando el proyecto en modo de desarrollo');
+}
 
 module.exports = { logger };

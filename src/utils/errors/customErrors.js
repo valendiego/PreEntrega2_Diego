@@ -4,7 +4,8 @@ class CustomError {
         cause,
         message,
         code = 1,
-        otherProblems = 'No listados'
+        otherProblems = 'No listados',
+        status
 
     }) {
         const error = new Error(message);
@@ -12,6 +13,7 @@ class CustomError {
         error.cause = cause;
         error.code = code;
         error.otherProblems = otherProblems;
+        error.status = status
         return error;
     }
 

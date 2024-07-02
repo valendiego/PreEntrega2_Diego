@@ -3,7 +3,7 @@ const { Router } = require('express'); // Importa la clase Router de Express par
 const router = Router(); // Crea un enrutador
 const passport = require('passport');
 const { Controller } = require('../controller/sessions.controller');
-const { verifyToken } = require('../middlewares/jwt.middleware');
+const { verifyToken, verifyPasswordToken } = require('../middlewares/jwt.middleware');
 const { isSuperAdmin } = require('../middlewares/auth.middleware');
 
 router.post('/register', passport.authenticate('register', { failureRedirect: '/', session: false }), (_, res) => new Controller().redirect(res));
@@ -18,7 +18,7 @@ router.get('/githubcallback', passport.authenticate('github', { session: false, 
 
 router.post('/resetPassword', async (req, res) => new Controller().sendMailToResetPassword(req, res));
 
-router.post('/resetPassword/:tid', async (req, res) => new Controller().resetPassword(req, res));
+router.post('/resetPassword/:tid', verifyPasswordToken, async (req, res) => new Controller().resetPassword(req, res));
 
 router.get('/logout', (req, res) => new Controller().logout(req, res));
 

@@ -21,7 +21,7 @@ class Controller {
             }
 
             res.render('createProduct', {
-                titlePage: 'Agregar Producto',
+                titlePage: 'Agregar producto',
                 style: ['styles.css'],
                 script: ['createProduct.js'],
                 isLoggedIn
@@ -37,12 +37,12 @@ class Controller {
 
             const { title, description, price, thumbnail, code, status, stock, category } = req.body;
             const owner = req.user.email;
-            await this.productRepository.addProduct({ title, description, price, thumbnail, code, status, stock, category, owner });
-            req.logger.info('Producto creado de manera correcta');
+            await this.#productRepository.addProduct({ title, description, price, thumbnail, code, status, stock, category, owner });
+            req.logger.info('Producto creado correctamente');
             res.status(301).redirect('/products');
         } catch (error) {
             req.logger.error(error);
-            res.status(500).json({ error });
+            res.status(error.status).json({ error });
         }
     }
 }

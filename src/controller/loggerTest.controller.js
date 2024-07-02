@@ -11,7 +11,7 @@ class Controller {
 
             res.status(200).json('Testeo de logger concluido');
         } catch (error) {
-            res.status(500).json('Error en el logger Tester');
+            res.status(500).json('Error en el logger Teste');
         }
     }
 }
