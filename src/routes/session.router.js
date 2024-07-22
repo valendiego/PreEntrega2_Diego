@@ -6,9 +6,13 @@ const { Controller } = require('../controller/sessions.controller');
 const { verifyToken, verifyPasswordToken } = require('../middlewares/jwt.middleware');
 const { isSuperAdmin } = require('../middlewares/auth.middleware');
 
-router.post('/register', passport.authenticate('register', { failureRedirect: '/', session: false }), (_, res) => new Controller().redirect(res));
+// router.post('/register', passport.authenticate('register', { failureRedirect: '/', session: false }), (req, res) => new Controller().redirect(req, res));
 
-router.post('/login', passport.authenticate('login', { failureRedirect: '/', session: false }), async (req, res) => new Controller().loginUser(req, res));
+router.post('/register', async (req, res) => new Controller().registerUser(req, res));
+
+// router.post('/login', passport.authenticate('login', { failureRedirect: '/', session: false }), async (req, res) => new Controller().loginUser(req, res));
+
+router.post('/login', async (req, res) => new Controller().loginUser(req, res));
 
 router.get('/current', passport.authenticate('current', { session: false }), (req, res) => new Controller().current(req, res));
 

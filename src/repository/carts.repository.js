@@ -66,22 +66,23 @@ class CartRepository {
                 cart.products = updatedCart;
                 await this.#cartDAO.updateCart(id, { products: cart.products })
             }
+
             return cart;
         } catch (error) {
             throw CustomError.createError({
                 name: 'Error con el carrito',
-                cause: 'Ocurrió en el método ocupado de obtener el carrito',
+                cause: 'Al parecer el carrito existe pero no se puede acceder al mismo',
                 message: 'Error al obtener el carrito',
                 code: ErrorCodes.UNDEFINED_CART,
                 otherProblems: error,
-                status: error.status || 404
+                status: error.status || 500
             });
         }
     }
 
     async addCart() {
         try {
-            const cart = { porducts: [] }
+            const cart = { products: [] }
             return await this.#cartDAO.addCart(cart);
         } catch (error) {
             throw CustomError.createError({
@@ -102,11 +103,11 @@ class CartRepository {
         const cart = await this.#verifyCartExists(cartId);
         if (product.owner && product.owner === user.email) {
             throw CustomError.createError({
-                name: 'Error con el carrito',
+                name: 'Permiso denegado',
                 cause: 'No puede agregar al carrito productos que están creados por el mismo usuario que está utilizando',
                 message: 'Error al agregar el producto al carrito',
                 code: ErrorCodes.CART_UPDATE_ERROR,
-                status: 500
+                status: 403
             });
         }
         // Verificar si el producto ya está en el carrito
@@ -152,6 +153,16 @@ class CartRepository {
             // Iterar sobre cada producto en el arreglo de productos
             for (const { product: productId, quantity } of products) {
                 await this.#verifyProductExists(productId);
+
+                if (quantity < 1 || isNaN(quantity)) {
+                    throw CustomError.createError({
+                        name: 'Error en la petición',
+                        cause: 'La cantidad ingresada debe ser un número válido mayor a 0',
+                        message: 'Petición rechazada por catidad inválida',
+                        code: ErrorCodes.CART_UPDATE_ERROR,
+                        status: 400
+                    })
+                }
 
                 // Verificar si el producto ya está en el carrito
                 const existingProductIndex = cart.products.findIndex(p => p.product.equals(productId));
@@ -205,7 +216,7 @@ class CartRepository {
             throw CustomError.createError({
                 name: 'Error con el carrito',
                 cause: 'Hubo un problema alctualizar la cantidad de unidades del producto en el carrito.',
-                message: 'Error al eliminar el producto del carrito',
+                message: 'Error al actualizar el producto del carrito',
                 code: ErrorCodes.CART_UPDATE_ERROR,
                 otherProblems: error,
                 status: error.status || 500

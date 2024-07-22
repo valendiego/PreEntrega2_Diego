@@ -1,0 +1,268 @@
+openapi: 3.0.0
+info:
+  title: API de Users
+  version: 1.0.0
+paths:
+  /api/sessions/register:
+    post:
+      summary: Registra un usuario nuevo en la base de datos.
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: Nombre
+                lastName:
+                  type: string
+                  example: Apellido
+                age:
+                  type: integer
+                  example: 18
+                email:
+                  type: string
+                  example: ejemplo@ejemplo.com
+                password: 
+                  type: string
+                  example: "12k4idviue"
+      responses:
+        '201':
+          description: Usuario registrado correctamente.
+        '400':
+          description: Email reservado, edad inválida, no proporciona email o contraseña
+        '409':
+          description: El email ya se encuentra registrado
+        '500':
+          description: Error interno
+  /api/sessions/login:
+    post:
+      summary: Loguea un usuario existente en la base de datos.
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: ejemplo@hotmail.com
+                password:
+                  type: string
+                  example: contraseña
+      responses:
+        '200':
+          description: Usuario logueado correctamente.
+        '401':
+          description: Contraseña incorrecta, email o contraseña no definido
+        '500':
+          description: Error interno
+  /api/sessions/resetPassword:
+    post:
+      summary: Envía un email al usuario para recuperar su contraseña.
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: ejemplo@hotmail.com
+      responses:
+        '200':
+          description: Email enviado para recuperar la contraseña.
+        '404':
+          description: No propociona una dirección de email o el mismo no se encuentra registrado
+  /api/sessions/resetPassword/{uid}:
+    post:
+      summary: Permite al usuario actualizar su contraseña.
+      tags:
+        - Users
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: UID recibido en el email.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newPassword:
+                  type: string
+                  example: nuevaContraseña
+                confirmPassword:
+                  type: string
+                  example: nuevaContraseña
+      responses:
+        '200':
+          description: Contraseña actualizada correctamente.
+        '400':
+          description: Faltan datos, las contraseñas no coiciden o son iguales que la contraseña anterior
+        '410':
+          description: El link de restablecimiento ha exiprado
+        '500':
+          description: Error interno
+  /api/sessions/current:
+    get:
+      summary: Muestra la información del token de login del usuario.
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Información del usuario obtenida.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    example: ejemplo@ejemplo.com
+                  id:
+                    type: string
+                    example: 668ee54dbe856b5aeb3a0337
+                  rol:
+                    type: string
+                    example: user
+                  firstName:
+                    type: string
+                    example: Nombre
+                  lastName:
+                    type: string
+                    example: Apellido
+                  age:
+                    type: integer
+                    example: 18
+                  cart:
+                    type: string
+                    example: 668ee54dbe856b5aeb3a0335
+        '401':
+          description: No se encuentra logeado ningún usuario
+  /api/sessions/logout:
+    get:
+      summary: Elimina la cookie accessToken que contiene la información del usuario.
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Usuario deslogueado.
+        '500':
+          description: Error interno
+  /api/sessions:
+    delete:
+      summary: Elimina el usuario y su carrito según el email.
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: correo@ejemplo.com
+      responses:
+        '204':
+          description: Usuario eliminado correctamente.
+        '404':
+          description: Email no registrado
+        '500':
+          description: Error interno
+  /api/sessions/premium/{id}:
+    post:
+      summary: Cambia el rol de un usuario a premium.
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del usuario.
+      responses:
+        '200':
+          description: Rol del usuario actualizado a premium o de premium a usuario.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    example: ejemplo@ejemplo.com
+                  id:
+                    type: string
+                    example: 668ee54dbe856b5aeb3a0337
+                  rol:
+                    type: string
+                    example: premium
+                  firstName:
+                    type: string
+                    example: Nombre
+                  lastName:
+                    type: string
+                    example: Apellido
+                  age:
+                    type: integer
+                    example: 18
+                  cart:
+                    type: string
+                    example: 668ee54dbe856b5aeb3a0335
+        '404':
+          description: ID inválido
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: Nombre de pila. Si se envia vacio se autocompleta 'Usuario'
+        lastName:
+          type: string
+          description: Apellido. Si se envia vacio se autocompleta 'Sin Identificar'
+        age:
+          type: integer
+          description: Edad. Si se envia vacio se autocompleta con 0
+        email:
+          type: string
+          description: Email con el que se desea registrar
+          unique: true
+        password:
+          type: string
+          description: Contraseña de la cuenta
+        rol:
+          type: string
+          description: Rol del usuario. Al crear el usuario se le asigna 'user' por defecto
+          default: user
+        cart:
+          type: string
+          format: objectId
+          description: Referencia al ID del carrito.
+      example:
+        id: 668ee39be85f791b18e2512a
+        firstName: Nombre
+        lastName: Apellido
+        age: 18
+        email: ejemplo@ejemplo.com
+        rol: user
+        cart: 668ee39be85f791b18e25128

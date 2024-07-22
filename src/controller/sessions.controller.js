@@ -12,8 +12,9 @@ class Controller {
         try {
             const { firstName, lastName, email, password } = req.body;
             const user = await this.#userRepository.registerUser(firstName, lastName, email, password);
-            req.logger.info('Usuario registrado')
-            res.status(201).json(user);
+            req.logger.info('Usuario registrado correctamente');
+            // res.redirect('/');
+            res.status(201).json(user)
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });
@@ -26,7 +27,8 @@ class Controller {
             const user = await this.#userRepository.loginUser(email, password);
             res.cookie('accessToken', user.accessToken, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
             req.logger.info('Usuario identificado');
-            res.redirect('/');
+            // res.redirect('/');
+            res.status(200).json(user);
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });
@@ -95,15 +97,17 @@ class Controller {
         try {
             res.clearCookie('accessToken');
             req.logger.info('Sesión finalizada');
-            res.redirect('/');
+            // res.redirect('/');
+            res.status(200).json({ message: 'Sessión finalizada' });
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });
         }
     }
 
-    redirect(res) {
+    redirect(req, res) {
         try {
+            req.logger.info('Usuario registrado correctamente');
             res.redirect('/');
         } catch (error) {
             res.status(error.status).json({ error });
@@ -114,8 +118,8 @@ class Controller {
         try {
             const { email } = req.body;
             await this.#userRepository.deleteUser(email);
-            res.logger.info('Usuario eliminado correctamente');
-            res.status(200).json({ message: 'User deleted successfully' });
+            req.logger.info('Usuario eliminado correctamente');
+            res.status(204).json({ message: 'Usuario eliminado correctamente' });
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });

@@ -2,7 +2,7 @@ require('dotenv').config();
 const UserDAO = require('../dao/mongo/users.dao');
 const CartDAO = require('../dao/mongo/carts.dao');
 const { hashPassword, isValidPassword } = require('../utils/hashing');
-const { generateToken } = require('../middlewares/jwt.middleware');
+const { generateToken, generatePasswordRecoveryToken } = require('../middlewares/jwt.middleware');
 const { UserDTO } = require('../dto/user.dto');
 const { CustomError } = require('../utils/errors/customErrors');
 const { ErrorCodes } = require('../utils/errors/errorCodes');
@@ -45,7 +45,8 @@ class UserRepository {
                 name: 'Credenciales inválidas',
                 cause: generateInvalidCredentialsUserData(email, password),
                 message: 'Debe ingresar un usuario y contraseña válidas',
-                code: ErrorCodes.INVALID_CREDENTIALS
+                code: ErrorCodes.INVALID_CREDENTIALS,
+                status: 401
             })
         }
     }
@@ -53,7 +54,15 @@ class UserRepository {
     async #generateNewUser(firstName, lastName, email, password, cart) {
         try {
             this.#validateLoginCredentials(email, password);
-
+            if (age <= 0) {
+                throw CustomError.createError({
+                    name: 'Error en la edad',
+                    cause: 'Debe ingresar un número válido mayor a 0',
+                    message: 'Edad inválida',
+                    code: ErrorCodes.AGE_VALIDATION_ERROR,
+                    status: 400
+                })
+            }
             const hashedPassword = hashPassword(password);
 
             const user = {
@@ -71,7 +80,8 @@ class UserRepository {
                 cause: 'Ocurrió un error al registrar el usuario en la base de datos',
                 message: 'Algo salió mal al generar un nuevo usuario',
                 error: ErrorCodes.USER_REGISTER_ERROR,
-                otherProblems: error
+                otherProblems: error,
+                status: error.status || 500
             })
         }
 
@@ -80,13 +90,28 @@ class UserRepository {
     #generateAccessToken(user) {
         return generateToken({
             email: user.email,
-            id: user._id,
+            id: user.id,
             rol: user.rol,
             firstName: user.firstName,
             lastName: user.lastName,
             cart: user.cart,
         });
     }
+
+    async #verifyUser(id) {
+        try {
+            const user = await this.#userDAO.findById(id);
+            return user
+        } catch {
+            throw CustomError.createError({
+                name: 'Usuario inválido',
+                cause: 'El ID del usuario ingresado no se ecuentra registrado en la base de datos.',
+                message: 'ID desconocido',
+                code: ErrorCodes.UNDEFINED_USER,
+                status: 404
+            })
+        };
+    };
 
     async registerUser(firstName, lastName, email, password) {
         try {
@@ -95,7 +120,8 @@ class UserRepository {
                     name: 'Error de registro',
                     cause: 'No se puede registrar el usuario administrador o superadministrador de esta manera',
                     message: 'No tiene permisos para registrar estos usuarios',
-                    code: ErrorCodes.ADMIN_USER_REGISTRATION_ERROR
+                    code: ErrorCodes.ADMIN_USER_REGISTRATION_ERROR,
+                    status: 400
                 })
             }
 
@@ -105,7 +131,8 @@ class UserRepository {
                     name: 'Error de registro',
                     cause: 'El email se encuentra registrado en la base de datos. Intente válidar sus credenciales.',
                     message: 'El email ya está registrado',
-                    code: ErrorCodes.EMAIL_ALREADY_REGISTERED
+                    code: ErrorCodes.EMAIL_ALREADY_REGISTERED,
+                    status: 409
                 })
             }
 
@@ -119,7 +146,8 @@ class UserRepository {
                 cause: 'Algo salió mal al registrar un nuevo usuario.',
                 message: 'No se pudo crear un nuevo usuario',
                 code: ErrorCodes.USER_REGISTER_ERROR,
-                otherProblems: error
+                otherProblems: error,
+                status: error.status || 500
             })
         }
 
@@ -144,7 +172,8 @@ class UserRepository {
                         name: 'Error de logeo',
                         cause: 'Ingresó una contraseña incorrecta. Intenté nuevamente o cambie la misma',
                         message: 'Contraseña incorrecta',
-                        code: ErrorCodes.INVALID_PASSWORD
+                        code: ErrorCodes.INVALID_PASSWORD,
+                        status: 401
                     })
                 }
             }
@@ -160,7 +189,8 @@ class UserRepository {
                 cause: 'Ocurrio validar sus credenciales. Intente nuevamente o cambie su contraseña',
                 message: 'Contraseña incorrecta',
                 code: ErrorCodes.USER_LOGIN_ERROR,
-                otherProblems: error
+                otherProblems: error,
+                status: error.status || 500
             })
         }
 
@@ -172,7 +202,8 @@ class UserRepository {
                 name: 'Sin email',
                 cause: 'Es necesario que ingrese un email para poder continuar con el cambio de contraseña',
                 message: 'Debe ingresar un email',
-                code: ErrorCodes.UNDEFINED_USER
+                code: ErrorCodes.UNDEFINED_USER,
+                status: 404
             })
         }
 
@@ -184,40 +215,41 @@ class UserRepository {
                     name: 'Email desconocido',
                     cause: 'Está intentando cambiar la contraseña de un email que no se encuentra registrado',
                     message: 'El email no se encuentra registrado',
-                    code: ErrorCodes.UNDEFINED_USER
+                    code: ErrorCodes.UNDEFINED_USER,
+                    status: 404
                 })
             }
         }
 
         const passToken = (await new MailingService().sendMail(email));
-        const handlerPassToken = {
-            passToken: hashPassword(passToken.randomNumber.toString()),
-            email: passToken.email,
-        }
+
+        const handlerPassToken = generatePasswordRecoveryToken(passToken.randomNumber, passToken.email);
 
         return handlerPassToken;
     }
 
-    async resetPassword(urlToken, cookieToken, newPassword, confirmPassword) {
-        const { passToken, email } = cookieToken;
+    async resetPassword(urlToken, token, newPassword, confirmPassword) {
+        const { code, email } = token;
 
         if (!newPassword || !confirmPassword) {
             throw CustomError.createError({
                 name: 'Datos faltantes',
                 cause: 'Es necesario que ingrese una nueva contraseña y la confirmación de la misma',
                 message: 'Debe completar todos los cambios',
-                code: ErrorCodes.PASSWORD_UPDATE_ERROR
+                code: ErrorCodes.PASSWORD_UPDATE_ERROR,
+                status: 400
             })
         }
 
-        const isValidToken = isValidPassword(urlToken, passToken);
+        const isValidToken = urlToken === code.toString();
 
         if (!isValidToken) {
             throw CustomError.createError({
                 name: 'Link inválido',
                 cause: 'El link no es válido o ha expirado. Vuelva a enviar el mail de confirmación.',
                 message: 'El link no es válido o ha expirado.',
-                code: ErrorCodes.PASSWORD_UPDATE_ERROR
+                code: ErrorCodes.PASSWORD_UPDATE_ERROR,
+                status: 410
             })
         }
 
@@ -226,7 +258,8 @@ class UserRepository {
                 name: 'Contraseña inválida',
                 cause: 'Las dos contraseñas ingresadas deben coincidir para poder continuar con la actualización',
                 message: 'Las dos contraseñas no coinciden',
-                code: ErrorCodes.PASSWORD_UPDATE_ERROR
+                code: ErrorCodes.PASSWORD_UPDATE_ERROR,
+                status: 400
             })
         }
 
@@ -239,7 +272,8 @@ class UserRepository {
                 name: 'Contraseña inválida',
                 cause: 'La la nueva contraseña no puede ser igual a la contraseña anterior.',
                 message: 'Debe actualizar su contraseña',
-                code: ErrorCodes.PASSWORD_UPDATE_ERROR
+                code: ErrorCodes.PASSWORD_UPDATE_ERROR,
+                status: 400
             })
         }
 
@@ -259,7 +293,7 @@ class UserRepository {
                 const lastName = fullName.substring(fullName.lastIndexOf(' ') + 1);
                 const password = '123';
 
-                const newUser = await this.registerUser(firstName, lastName, profile._json.email, password);
+                const newUser = await this.registerUser(firstName, lastName, age, profile._json.email, password);
                 const accessToken = this.#generateAccessToken(newUser);
 
                 return { accessToken, user: newUser };
@@ -273,7 +307,8 @@ class UserRepository {
                 cause: 'Ocurrió un error inesperado y no se pudo emparejar su cuenta de github en la base de datos',
                 message: 'Hubo un problema con su cuenta de github',
                 code: ErrorCodes.GITHUB_LOGIN_ERROR,
-                otherProblems: error
+                otherProblems: error,
+                status: error.status || 500
             })
         }
 
@@ -283,14 +318,15 @@ class UserRepository {
         try {
             const user = await this.#userDAO.findByEmail(email);
             if (user) {
-                await this.#cartDAO.deleteCartById(user.cart);
+                await this.#cartDAO.deleteCart(user.cart);
                 await this.#userDAO.deleteByEmail(email);
             } else {
                 throw CustomError.createError({
                     name: 'Email desconocido',
-                    cause: 'Está intentando un usuario con un email que no se encuentra registrado',
+                    cause: 'Está intentando eliminar un usuario con un email que no se encuentra registrado',
                     message: 'El email no se encuentra registrado',
-                    code: ErrorCodes.UNDEFINED_USER
+                    code: ErrorCodes.UNDEFINED_USER,
+                    status: 404
                 })
             }
         } catch (error) {
@@ -299,7 +335,8 @@ class UserRepository {
                 cause: 'Su petición no fue procesada de forma correcta y no se pudo eliminar el usuario.',
                 message: 'Hubo un problema y no se pudo elimiar el usuario',
                 code: ErrorCodes.USER_DELETION_ERROR,
-                otherProblems: error
+                otherProblems: error,
+                status: error.status || 500
             })
         }
 
@@ -307,27 +344,21 @@ class UserRepository {
 
     async getUserById(id) {
         try {
-            return await this.#userDAO.findById(id);
+            const user = await this.#userDAO.findById(id);
+            return user;
         } catch {
             throw CustomError.createError({
                 name: 'Email desconocido',
                 cause: 'Ha ingresado un ID inválido o el usuario no se encuentra registrado en la base de datos',
                 message: 'El emmail no se encuentra registrado',
-                code: ErrorCodes.UNDEFINED_USER
+                code: ErrorCodes.UNDEFINED_USER,
+                status: 404
             })
         }
     }
 
     async changeRole(id) {
-        const user = await this.#userDAO.findById(id);
-        if (!user) {
-            throw CustomError.createError({
-                name: 'Usuario inválido',
-                cause: 'El ID del usuario ingresado no se ecuentra registrado en la base de datos.',
-                message: 'ID desconocido',
-                code: ErrorCodes.UNDEFINED_USER
-            })
-        }
+        const user = await this.#verifyUser(id);
 
         if (user.rol === 'user') {
             await this.#userDAO.updateRole(user.email, 'premium');
@@ -335,8 +366,8 @@ class UserRepository {
             await this.#userDAO.updateRole(user.email, 'user');
         }
 
-        const updatedUser = this.#userDAO.findById(id);
-        return updatedUser;
+        const updatedUser = await this.#userDAO.findById(id);
+        return new UserDTO(updatedUser);
     }
 }
 
