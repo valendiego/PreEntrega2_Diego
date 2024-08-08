@@ -18,16 +18,16 @@
             <h1 class="title">Tech Store</h1>
             {{#if isLoggedIn}}
             <ul class="ul">
-                <li><a class="nav__link" href="http://localhost:8080/products">Productos</a></li>
-                <li><a class="nav__link" href="http://localhost:8080/createProduct">Crear producto</a></li>
-                <li><a class="nav__link" href="http://localhost:8080/cart/{{cartId}}">Carrito</a></li>
-                <li><a class="nav__link" href="http://localhost:8080">Perfil</a></li>
+                <li><a class="nav__link" href="/products">Productos</a></li>
+                <li><a class="nav__link" href="/createProduct">Crear producto</a></li>
+                <li><a class="nav__link" href="/cart/{{cartId}}">Carrito</a></li>
+                <li><a class="nav__link" href="/users">Perfil</a></li>
             </ul>
             {{/if}}
             {{#if isNotLoggedIn}}
             <ul class="ul">
-                <li><a class="nav__link" href="http://localhost:8080/products">Productos</a></li>
-                <li><a class="nav__link" href="http://localhost:8080/">Iniciar sesión</a></li>
+                <li><a class="nav__link" href="/products">Productos</a></li>
+                <li><a class="nav__link" href="/users">Iniciar sesión</a></li>
             </ul>
             {{/if}}
         </nav>

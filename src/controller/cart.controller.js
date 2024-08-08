@@ -98,7 +98,7 @@ class Controller {
             const cartId = req.params.cid;
             const cart = await this.cartRepository.clearCart(cartId);
             req.logger.info('Se ha vaciado el carrito de manera correcta');
-            res.status(200).json(cart);
+            res.status(204).json(cart);
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });
@@ -111,10 +111,7 @@ class Controller {
             const userEmail = req.user.email;
             const ticket = await this.ticketRepository.generateTicket(cid, userEmail);
             req.logger.info('Compra finalizada!');
-            res.status(200).json({
-                message: 'Compra realizada con éxito',
-                ticket
-            });
+            res.status(201).json(ticket);
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });

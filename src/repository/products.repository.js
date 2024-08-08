@@ -4,6 +4,7 @@ const { ProductDTO } = require('../dto/product.dto');
 const { CustomError } = require('../utils/errors/customErrors');
 const { ErrorCodes } = require('../utils/errors/errorCodes');
 const { generateInvalidProductData } = require('../utils/errors/errors');
+const { MailingService } = require('../utils/mailingService');
 
 class ProductRepository {
     #userDAO
@@ -77,27 +78,23 @@ class ProductRepository {
 
     }
 
-    async #validateAndFormatAddProductsParams(title, description, price, thumbnail, code, status, stock, category, owner) {
+    async #validateAndFormatAddProductsParams(title, description, price, thumbnail, code, stock, category, owner) {
 
         const invalidOptions = isNaN(+price) || +price <= 0 || isNaN(+stock) || +stock < 0;
 
         if (!title || !description || !code || !category || invalidOptions) {
             throw CustomError.createError({
                 name: 'Error al agregar el producto.',
-                cause: generateInvalidProductData(title, description, price, thumbnail, code, status, stock, category),
+                cause: generateInvalidProductData(title, description, price, thumbnail, code, stock, category),
                 message: 'No se pudo agregar el producto a la base de datos.',
                 code: ErrorCodes.INVALID_PRODUCT_DATA,
                 status: 400
             });
         }
 
-        const finalThumbnail = thumbnail ? thumbnail : 'Sin Imagen';
+        const finalThumbnail = thumbnail ? `../products/${thumbnail.originalname}` : 'Sin Imagen';
 
-        if (typeof status === 'undefined' || status === true || status === 'true') {
-            status = true;
-        } else {
-            status = false;
-        }
+        const finalStatus = stock >= 1 ? true : false;
 
         const user = await this.#userDAO.findByEmail(owner);
 
@@ -121,7 +118,7 @@ class ProductRepository {
             price,
             thumbnail: finalThumbnail,
             code,
-            status,
+            status: finalStatus,
             stock,
             category,
             owner: finalOwner
@@ -153,11 +150,10 @@ class ProductRepository {
 
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error al conectar',
-                cause: 'Ocurrió un error al buscar los productos en la base de datos',
-                message: 'No se pudieron obtener los productos de la base de datos',
-                code: ErrorCodes.DATABASE_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error al conectar',
+                cause: error.cause || 'Ocurrió un error al buscar los productos en la base de datos',
+                message: error.message || 'No se pudieron obtener los productos de la base de datos',
+                code: error.code || ErrorCodes.DATABASE_ERROR,
                 status: error.status || 500
             });
         }
@@ -195,17 +191,16 @@ class ProductRepository {
 
     async addProduct(productData) {
         try {
-            const { title, description, price, thumbnail, code, status, stock, category, owner } = productData;
-            const productHandler = await this.#validateAndFormatAddProductsParams(title, description, price, thumbnail, code, status, stock, category, owner);
+            const { title, description, price, thumbnail, code, stock, category, owner } = productData;
+            const productHandler = await this.#validateAndFormatAddProductsParams(title, description, price, thumbnail, code, stock, category, owner);
             const product = await this.productDAO.addProduct(productHandler);
             return new ProductDTO(product);
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error al crear producto',
-                cause: 'No se pudo crear el producto por falta de datos o existe un problema para cargarlo a la base de datos',
-                message: 'No se pudo cargar el producto a la base de datos',
-                code: ErrorCodes.PRODUCT_CREATION_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error al crear producto',
+                cause: error.cause || 'No se pudo crear el producto por falta de datos o existe un problema para cargarlo a la base de datos',
+                message: error.message || 'No se pudo cargar el producto a la base de datos',
+                code: error.code || ErrorCodes.PRODUCT_CREATION_ERROR,
                 status: error.status || 500
             })
         }
@@ -234,14 +229,24 @@ class ProductRepository {
             return new ProductDTO(updatedProduct);
 
         } catch (error) {
-            throw error;
+            throw CustomError.createError({
+                name: error.name || 'Error al actualizar',
+                cause: error.cause || 'Ocurrió un error y la actualización del producto no pudo ser llevada a cabo',
+                message: error.message || 'No se pudo actualizar el producto',
+                code: error.code || ErrorCodes.PRODUCT_UPDATE_ERROR,
+                status: error.status || 500
+            });
         }
     }
 
     async deleteProduct(productId, user) {
 
         const product = await this.getProductById(productId);
-        if (user.rol === 'admin') {
+        if (user.rol === 'admin' || user.rol === 'superAdmin') {
+            const userPayload = await this.#userDAO.findByEmail(product.owner);
+            if (userPayload) {
+                await new MailingService().sendNotificationOfProductRemoved(userPayload.email, userPayload.firstName, userPayload.lastName, product.title, product.id);
+            }
             return await this.productDAO.deleteProduct(productId);
         } else if (product.owner && product.owner === user.email) {
             return await this.productDAO.deleteProduct(productId);

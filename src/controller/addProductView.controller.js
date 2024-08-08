@@ -11,20 +11,23 @@ class Controller {
         try {
             const isLoggedIn = req.cookies.accessToken !== undefined;
             const adminUser = req.user.rol;
+            const cartId = req.user.cart;
             if (adminUser === 'user') {
                 return res.render('error', {
                     titlePage: 'Error',
                     message: 'No tiene permisos de acceso.',
                     style: ['styles.css'],
-                    isLoggedIn
+                    isLoggedIn,
+                    cartId
                 });
             }
 
             res.render('createProduct', {
-                titlePage: 'Agregar producto',
+                titlePage: 'Agregar Producto',
                 style: ['styles.css'],
                 script: ['createProduct.js'],
-                isLoggedIn
+                isLoggedIn,
+                cartId
             });
         } catch (error) {
             req.logger.error(error);
@@ -38,7 +41,7 @@ class Controller {
             const { title, description, price, thumbnail, code, status, stock, category } = req.body;
             const owner = req.user.email;
             await this.#productRepository.addProduct({ title, description, price, thumbnail, code, status, stock, category, owner });
-            req.logger.info('Producto creado correctamente');
+            req.logger.info('Producto creado de manera correcta');
             res.status(301).redirect('/products');
         } catch (error) {
             req.logger.error(error);

@@ -47,7 +47,8 @@
                         <label class="form-check-label">Verdadero</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" id="productStatusFalse" value="false">
+                        <input class="form-check-input" type="radio" name="status" id="productStatusFalse"
+                            value="false">
                         <label class="form-check-label">Falso</label>
                     </div>
                 </div>
@@ -58,6 +59,21 @@
             <div class="col-sm-10">
                 <input type="number" class="form-control" id="productStock" name="stock">
             </div>
+        </div>
+        <div>
+            <label>Categoria: </label>
+            <label>
+                <select name="category">
+                    <option value="">Todas las categorías</option>
+                    <option value="laptops">Laptops</option>
+                    <option value="auriculares">Auriculares</option>
+                    <option value="celulares">Celulares</option>
+                    <option value="camaras">Cámaras</option>
+                    <option value="relojes">Relojes</option>
+                    <option value="impresoras">Impresoras</option>
+                    <option value="monitores">Monitores</option>
+                </select>
+            </label>
         </div>
         <input type="submit" class="btn btn-primary" id="addProduct" value="Agregar">
     </form>

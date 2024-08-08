@@ -1,3 +1,4 @@
+
 const { Users } = require('./models');
 
 class UserDAO {
@@ -27,6 +28,18 @@ class UserDAO {
 
     async findAll() {
         return await Users.find();
+    }
+
+    async lastConnection(email, last_connection) {
+        return await Users.updateOne({ email }, { $set: { last_connection } })
+    }
+
+    async updateDocuments(id, documents) {
+        return await Users.findByIdAndUpdate(id, { $set: { documents } });
+    }
+
+    async updatePicture(id, picture) {
+        return await Users.findByIdAndUpdate(id, { $set: { picture } })
     }
 }
 

@@ -11,6 +11,7 @@ const { useLogger } = require('./middlewares/logger.middleware');
 const helmet = require('helmet');
 const swaggerJSDoc = require('swagger-jsdoc');
 const { serve, setup } = require('swagger-ui-express');
+const methodOverride = require('method-override');
 
 const app = express();
 
@@ -23,6 +24,9 @@ app.set('view engine', 'handlebars')
 app.use(express.urlencoded({ extended: true })); // Middleware para parsear datos de formularios
 app.use(express.json()); // Middleware para parsear datos JSON
 app.use(express.static(`${__dirname}/../public`));
+
+// Configura method-override para ver el campo _method en los formularios
+app.use(methodOverride('_method'));
 
 app.use(helmet());
 app.use(sessionMiddleware);
@@ -46,14 +50,15 @@ const swaggerOptions = {
 const specs = swaggerJSDoc(swaggerOptions);
 app.use('/apidocs', serve, setup(specs));
 
+
 // ENDPOINTS
 app.use('/api/products', productsRouter);
 app.use('/products', productsViewsRouter);
 app.use('/api/cart', cartRouter);
 app.use('/cart', cartViewsRouter);
 app.use('/createProduct', createProductRouter);
-app.use('/api/sessions', sessionRouter);
-app.use('/', sessionViewsRouter);
+app.use('/api/users', sessionRouter);
+app.use('/users', sessionViewsRouter);
 app.use('/mockingproducts', mockingProductRouter);
 app.use('/loggertest', loggerTestRouter);
 
@@ -68,7 +73,7 @@ if (require.main === module) {
         const PORT = process.env.PORT || 8080;
 
         app.listen(PORT, '0.0.0.0', () => {
-            console.log(`\nServidor cargado! \nhttp://localhost:${PORT}\n\nDocumentación ↓\nhttp://localhost:${PORT}/apidocs`);
+            console.log(`\nServidor cargado! \nhttp://localhost:${PORT}/users\n\nDocumentación ↓\nhttp://localhost:${PORT}/apidocs`);
         });
     };
 

@@ -13,8 +13,7 @@ class Controller {
             const { firstName, lastName, email, password } = req.body;
             const user = await this.#userRepository.registerUser(firstName, lastName, email, password);
             req.logger.info('Usuario registrado correctamente');
-            // res.redirect('/');
-            res.status(201).json(user)
+            res.status(201).json(user);
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });
@@ -27,7 +26,6 @@ class Controller {
             const user = await this.#userRepository.loginUser(email, password);
             res.cookie('accessToken', user.accessToken, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
             req.logger.info('Usuario identificado');
-            // res.redirect('/');
             res.status(200).json(user);
         } catch (error) {
             req.logger.error(error);
@@ -41,7 +39,7 @@ class Controller {
             const tokenPass = await this.#userRepository.sendMailToResetPassword(email);
             res.cookie('passToken', tokenPass, { maxAge: 60 * 60 * 1000, httpOnly: true });
             req.logger.info('Email enviado');
-            res.redirect('/resetPasswordWarning');
+            res.status(200).json({ message: `Mensaje enviado correctamente a: ${email}` });
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error })
@@ -55,16 +53,16 @@ class Controller {
             const { newPassword, confirmPassword } = req.body;
             if (!token) {
                 req.logger.info('El token ha expirado');
-                return res.redirect('/resetPassword');
+                return res.status(400).json({ message: 'El token de actualización ha exipirado o no es válido' });
             }
             const updatePassword = await this.#userRepository.resetPassword(urlToken, token, newPassword, confirmPassword);
             res.clearCookie('passToken');
             if (!updatePassword) {
                 req.logger.info('No se pudo actualizar la contraseña');
-                return res.redirect('/');
+                return res.status(400).json({ message: 'No se pudo actualizar la contraseña' });
             }
             req.logger.info('Contraseña actualizada');
-            return res.redirect('/login');
+            return res.status(200).json({ message: 'Contraseña actualizada exitosamente' });
         } catch (error) {
             req.logger.error(error);
             return res.status(error.status).json({ error });
@@ -86,30 +84,24 @@ class Controller {
     githubCb(req, res) {
         try {
             res.cookie('accessToken', req.user.accessToken, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
-            res.redirect('/');
+            res.redirect('/users');
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });
         }
     }
 
-    logout(req, res) {
+    async logout(req, res) {
         try {
+            if (req.user && (req.user.rol === 'user' || req.user.rol === 'premium')) {
+                const uid = req.user.id;
+                await this.#userRepository.updateConnection(uid);
+            }
             res.clearCookie('accessToken');
             req.logger.info('Sesión finalizada');
-            // res.redirect('/');
-            res.status(200).json({ message: 'Sessión finalizada' });
+            res.status(200).json({ message: 'Sesión finalizada' });
         } catch (error) {
             req.logger.error(error);
-            res.status(error.status).json({ error });
-        }
-    }
-
-    redirect(req, res) {
-        try {
-            req.logger.info('Usuario registrado correctamente');
-            res.redirect('/');
-        } catch (error) {
             res.status(error.status).json({ error });
         }
     }
@@ -128,7 +120,8 @@ class Controller {
 
     async current(req, res) {
         try {
-            const user = req.user
+            const uid = req.user.id;
+            const user = await this.#userRepository.getUserById(uid);
             req.logger.info(JSON.stringify(user, null, 2));
             res.json(user);
         } catch (error) {
@@ -141,9 +134,57 @@ class Controller {
         try {
             const uid = req.params.uid;
             const user = await this.#userRepository.changeRole(uid);
-            req.logger.info(`Rol del usuario actualizado a ${user.rol}`);
+            req.logger.info(`Rol del usuario actualizado`);
             res.clearCookie('accessToken');
-            return res.json(user);
+            return res.status(200).json(user);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(error.status).json({ error });
+        }
+    }
+
+    async uploadDocuments(req, res) {
+        try {
+            const userId = req.params.uid;
+            const files = req.files;
+            const user = await this.#userRepository.updateUserDocuments(userId, files);
+            req.logger.info('Documentación actualizada exitosamente');
+            res.status(201).json({ message: 'Documentación actualizada exitosamente' });
+        } catch (error) {
+            req.logger.error(error);
+            res.status(error.status).json({ error });
+        }
+    }
+
+    async updatePicture(req, res) {
+        try {
+            const userId = req.user.id;
+            const picture = req.file;
+            await this.#userRepository.updatePicture(userId, picture);
+            req.logger.info('Imagen de perfil actualizada correctamente');
+            res.status(200).json({ message: 'Su imagen de perfil se actualizó de manera exitosa.' });
+        } catch (error) {
+            req.logger.error(error);
+            res.status(error.status).json({ error });
+        }
+    }
+
+    async getUsers(req, res) {
+        try {
+            const users = await this.#userRepository.getUsers();
+            req.logger.info('Usuarios retornados');
+            res.status(200).json(users);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(error.status).json({ error });
+        }
+    }
+
+    async deleteUsers(req, res) {
+        try {
+            const users = await this.#userRepository.deleteUsers();
+            req.logger.info('Se las cuentas que se encontraban en desuso');
+            res.status(204).json(users);
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });

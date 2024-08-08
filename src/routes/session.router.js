@@ -4,13 +4,11 @@ const router = Router(); // Crea un enrutador
 const passport = require('passport');
 const { Controller } = require('../controller/sessions.controller');
 const { verifyToken, verifyPasswordToken } = require('../middlewares/jwt.middleware');
-const { isSuperAdmin } = require('../middlewares/auth.middleware');
-
-// router.post('/register', passport.authenticate('register', { failureRedirect: '/', session: false }), (req, res) => new Controller().redirect(req, res));
+const { isSuperAdmin, isUser, isAdmin } = require('../middlewares/auth.middleware');
+const { documentUploader, profileUploader } = require('../utils/multerUploader');
+const { multerErrorHandler } = require('../middlewares/multerErrorHandler.middleware');
 
 router.post('/register', async (req, res) => new Controller().registerUser(req, res));
-
-// router.post('/login', passport.authenticate('login', { failureRedirect: '/', session: false }), async (req, res) => new Controller().loginUser(req, res));
 
 router.post('/login', async (req, res) => new Controller().loginUser(req, res));
 
@@ -24,10 +22,22 @@ router.post('/resetPassword', async (req, res) => new Controller().sendMailToRes
 
 router.post('/resetPassword/:tid', verifyPasswordToken, async (req, res) => new Controller().resetPassword(req, res));
 
-router.get('/logout', (req, res) => new Controller().logout(req, res));
+router.get('/logout', verifyToken, async (req, res) => new Controller().logout(req, res));
 
-router.delete('/', verifyToken, isSuperAdmin, (req, res) => new Controller().deleteUser(req, res));
+router.delete('/deleteUser', verifyToken, isSuperAdmin, (req, res) => new Controller().deleteUser(req, res));
 
-router.post('/premium/:uid', verifyToken, async (req, res) => new Controller().changeRole(req, res))
+router.post('/premium/:uid', verifyToken, async (req, res) => new Controller().changeRole(req, res));
+
+router.post('/:uid/documents', verifyToken, documentUploader.fields([
+    { name: 'identification', maxCount: 1 },
+    { name: 'proofOfAddress', maxCount: 1 },
+    { name: 'proofOfAccount', maxCount: 1 },
+]), multerErrorHandler, async (req, res) => new Controller().uploadDocuments(req, res));
+
+router.post('/picture', verifyToken, isUser, profileUploader.single('profilePicture'), async (req, res) => new Controller().updatePicture(req, res));
+
+router.get('/', verifyToken, isAdmin, async (req, res) => new Controller().getUsers(req, res));
+
+router.delete('/', verifyToken, isAdmin, async (req, res) => new Controller().deleteUsers(req, res));
 
 module.exports = router;

@@ -31,7 +31,6 @@ class Controller {
                 products: { ...products, payload: productsPayload },
                 titlePage: 'Productos',
                 style: ['styles.css'],
-                script: ['products.js'],
                 isLoggedIn,
                 isNotLoggedIn: !isLoggedIn,
                 firstName,
@@ -49,7 +48,8 @@ class Controller {
             const isLoggedIn = req.cookies.accessToken !== undefined;
             const productId = req.params.pid;
             const product = await this.productRepository.getProductById(productId);
-            const user = req.user
+            const user = req.user;
+            const cartId = req.user.cart;
 
             const productData = {
                 title: product.title,
@@ -60,7 +60,7 @@ class Controller {
                 code: product.code,
                 id: product.id,
                 isLoggedIn,
-                cartId: user.cart
+                cartId: user ? user.cart : 'noCart'
             };
 
             res.status(200).render('product', {
@@ -69,7 +69,7 @@ class Controller {
                 style: ['styles.css'],
                 isLoggedIn,
                 isNotLoggedIn: !isLoggedIn,
-                cart: user.cart
+                cartId
             });
         } catch (error) {
             req.logger.error(error);

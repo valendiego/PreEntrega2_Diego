@@ -25,6 +25,7 @@ const ErrorCodes = {
     UNDEFINED_USER: 25,                 // El usuario no existe
     DUPLICATE_PRODUCT_CODE: 26,         // El código de producto está duplecado.
     INVALID_QUANTITY: 27,               // Debe ingresar un valor numerico mayor a 0
+    UNDEFINED_DATA: 28,                 // No puede enviar un formaulario vacio
 };
 
 module.exports = { ErrorCodes };

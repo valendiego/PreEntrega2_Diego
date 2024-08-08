@@ -3,7 +3,7 @@ info:
   title: API de Users
   version: 1.0.0
 paths:
-  /api/sessions/register:
+  /api/users/register:
     post:
       summary: Registra un usuario nuevo en la base de datos.
       tags:
@@ -29,7 +29,7 @@ paths:
                   example: ejemplo@ejemplo.com
                 password: 
                   type: string
-                  example: "12k4idviue"
+                  example: "1234abcd"
       responses:
         '201':
           description: Usuario registrado correctamente.
@@ -39,7 +39,7 @@ paths:
           description: El email ya se encuentra registrado
         '500':
           description: Error interno
-  /api/sessions/login:
+  /api/users/login:
     post:
       summary: Loguea un usuario existente en la base de datos.
       tags:
@@ -64,7 +64,7 @@ paths:
           description: Contraseña incorrecta, email o contraseña no definido
         '500':
           description: Error interno
-  /api/sessions/resetPassword:
+  /api/users/resetPassword:
     post:
       summary: Envía un email al usuario para recuperar su contraseña.
       tags:
@@ -84,7 +84,7 @@ paths:
           description: Email enviado para recuperar la contraseña.
         '404':
           description: No propociona una dirección de email o el mismo no se encuentra registrado
-  /api/sessions/resetPassword/{uid}:
+  /api/users/resetPassword/{uid}:
     post:
       summary: Permite al usuario actualizar su contraseña.
       tags:
@@ -118,7 +118,7 @@ paths:
           description: El link de restablecimiento ha exiprado
         '500':
           description: Error interno
-  /api/sessions/current:
+  /api/users/current:
     get:
       summary: Muestra la información del token de login del usuario.
       tags:
@@ -154,7 +154,7 @@ paths:
                     example: 668ee54dbe856b5aeb3a0335
         '401':
           description: No se encuentra logeado ningún usuario
-  /api/sessions/logout:
+  /api/users/logout:
     get:
       summary: Elimina la cookie accessToken que contiene la información del usuario.
       tags:
@@ -164,7 +164,7 @@ paths:
           description: Usuario deslogueado.
         '500':
           description: Error interno
-  /api/sessions:
+  /api/users/deleteUser:
     delete:
       summary: Elimina el usuario y su carrito según el email.
       tags:
@@ -186,7 +186,7 @@ paths:
           description: Email no registrado
         '500':
           description: Error interno
-  /api/sessions/premium/{id}:
+  /api/users/premium/{uid}:
     post:
       summary: Cambia el rol de un usuario a premium.
       tags:
@@ -227,8 +227,94 @@ paths:
                   cart:
                     type: string
                     example: 668ee54dbe856b5aeb3a0335
+        '400':
+          description: Falta agregar la documentación correspondiente para realizar la actualización
         '404':
           description: ID inválido
+  /api/users/{uid}/documents:
+    post:
+      summary: Actualiza la documentación del usuario
+      tags:
+        - Users
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                identification:
+                  type: string
+                  format: binary
+                  description: Identificación
+                proofOfAddress:
+                  type: string
+                  format: binary
+                  description: Comprobante de domicilio
+                proofOfAccount:
+                  type: string
+                  format: binary
+                  description: Comprobante de estado de cuenta
+      responses:
+        '201':
+          description: La documentación se ha actualizado de manera correcta
+        '400':
+          description: Campo de archivo inesperado. Verifique los campos permitidos
+        '404':
+          description: El ID del usuario no existe
+  /api/users/picture:
+    post:
+      summary: Actualiza la foto de perfil del usuario
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content: 
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                profilePicture:
+                  type: string
+                  format: binary
+                  description: Foto de perfil
+      responses:
+        '200':
+          description: La imagen se ha cargado de manera correcta
+        '400':
+          description: Campo de archivo inesperado
+        '403':
+          description: No cuenta con los permisos adecuados
+  /api/users:
+    get:
+      summary: Obtiene todos los usuarios cargados en la base de datos
+      tags:
+        - Users
+      responses: 
+        '200':
+          description: Devuelve los usuarios de manera correcta
+        '403':
+          description: No cuenta con los permisos adecuados
+        '500':
+          description: Error interno
+    delete:
+      summary: Elimina todos los usuarios por inactividad
+      tags:
+        - Users
+      responses:
+        '204':
+          description: Elimina los usuarios de manera correcta
+        '403':
+          description: No cuenta con los permisos adecuados
+        '500':
+          description: Error interno
 components:
   schemas:
     User:

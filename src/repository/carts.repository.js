@@ -70,11 +70,10 @@ class CartRepository {
             return cart;
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error con el carrito',
-                cause: 'Al parecer el carrito existe pero no se puede acceder al mismo',
-                message: 'Error al obtener el carrito',
-                code: ErrorCodes.UNDEFINED_CART,
-                otherProblems: error,
+                name: error.name || 'Error con el carrito',
+                cause: error.cause || 'Al parecer el carrito existe pero no se puede acceder al mismo',
+                message: error.message || 'Error al obtener el carrito',
+                code: error.code || ErrorCodes.UNDEFINED_CART,
                 status: error.status || 500
             });
         }
@@ -86,11 +85,10 @@ class CartRepository {
             return await this.#cartDAO.addCart(cart);
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error con el carrito',
-                cause: 'Hubo un problema al generar un nuevo carrito en la base de datos',
-                message: 'Error al crear un nuevo carrito',
-                code: ErrorCodes.CART_CREATE_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error con el carrito',
+                cause: error.cause || 'Hubo un problema al generar un nuevo carrito en la base de datos',
+                message: error.message || 'Error al crear un nuevo carrito',
+                code: error.code || ErrorCodes.CART_CREATE_ERROR,
                 status: error.status || 500
             });
         }
@@ -136,11 +134,10 @@ class CartRepository {
             return cart;
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error con el carrito',
-                cause: 'No se pudo realizar la actualizacion del carrito en la base de datos y, por este motivo, el producto no pudo ser eliminado',
-                message: 'Error al eliminar el producto del carrito',
-                code: ErrorCodes.CART_UPDATE_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error con el carrito',
+                cause: error.cause || 'No se pudo realizar la actualizacion del carrito en la base de datos y, por este motivo, el producto no pudo ser eliminado',
+                message: error.message || 'Error al eliminar el producto del carrito',
+                code: error.codeErrorCodes.CART_UPDATE_ERROR,
                 status: error.status || 500
             });
         }
@@ -181,11 +178,10 @@ class CartRepository {
             return updatedCart;
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error con el carrito',
-                cause: 'Hubo un problema alctualizar el carrito en la base de datos.',
-                message: 'Error al actualizar el carrito',
-                code: ErrorCodes.CART_UPDATE_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error con el carrito',
+                cause: error.cause || 'Hubo un problema alctualizar el carrito en la base de datos.',
+                message: error.message || 'Error al actualizar el carrito',
+                code: error.code || ErrorCodes.CART_UPDATE_ERROR,
                 status: error.status || 500
             });
         }
@@ -214,11 +210,10 @@ class CartRepository {
             return cart;
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error con el carrito',
-                cause: 'Hubo un problema alctualizar la cantidad de unidades del producto en el carrito.',
-                message: 'Error al actualizar el producto del carrito',
-                code: ErrorCodes.CART_UPDATE_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error con el carrito',
+                cause: error.cause || 'Hubo un problema alctualizar la cantidad de unidades del producto en el carrito.',
+                message: error.message || 'Error al actualizar el producto del carrito',
+                code: error.code || ErrorCodes.CART_UPDATE_ERROR,
                 status: error.status || 500
             });
         }
@@ -232,11 +227,10 @@ class CartRepository {
 
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error con el carrito',
-                cause: 'Hubo un problema alctualizar el carrito y no se pudo vaciar',
-                message: 'Error al vaciar el carrito',
-                code: ErrorCodes.CART_CLEAR_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error con el carrito',
+                cause: error.cause || 'Hubo un problema alctualizar el carrito y no se pudo vaciar',
+                message: error.message || 'Error al vaciar el carrito',
+                code: error.code || ErrorCodes.CART_CLEAR_ERROR,
                 status: error.status || 500
             });
         }

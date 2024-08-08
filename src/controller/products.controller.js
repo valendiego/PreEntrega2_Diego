@@ -26,20 +26,7 @@ class Controller {
         try {
             const productId = req.params.pid;
             const product = await this.productRepository.getProductById(productId);
-            const cart = req.user ? req.user.cart : null;
-
-            const productData = {
-                title: product.title,
-                thumbnail: product.thumbnail,
-                description: product.description,
-                price: product.price,
-                stock: product.stock,
-                code: product.code,
-                id: product._id,
-                cart
-            };
-
-            res.status(200).json(productData);
+            res.status(200).json(product);
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });
@@ -61,11 +48,12 @@ class Controller {
 
     async addProduct(req, res) {
         try {
-            const { title, description, price, thumbnail, code, status, stock, category } = req.body;
+            const { title, description, price, code, stock, category } = req.body;
             const owner = req.user.email;
-            const product = await this.productRepository.addProduct({ title, description, price, thumbnail, code, status, stock, category, owner });
+            const thumbnail = req.file;
+            const product = await this.productRepository.addProduct({ title, description, price, thumbnail, code, stock, category, owner });
             req.logger.info('Producto creado de manera correcta');
-            res.status(200).json(product);
+            res.status(201).json(product);
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });
@@ -77,7 +65,7 @@ class Controller {
             const productId = req.params.pid;
             const updatedProduct = await this.productRepository.updateProduct(productId, req.body);
             req.logger.info('Producto actualizado de manera correcta');
-            res.status(200).json(updatedProduct);
+            res.status(201).json(updatedProduct);
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });
@@ -90,7 +78,7 @@ class Controller {
             const user = req.user
             await this.productRepository.deleteProduct(productId, user);
             req.logger.info('Producto eliminado de manera correcta')
-            res.status(200).json({ message: 'Producto eliminado' });
+            res.status(204).json({ message: 'Producto eliminado' });
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });

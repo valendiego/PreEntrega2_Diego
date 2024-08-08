@@ -4,6 +4,7 @@ const CartDAO = require('../dao/mongo/carts.dao');
 const { hashPassword, isValidPassword } = require('../utils/hashing');
 const { generateToken, generatePasswordRecoveryToken } = require('../middlewares/jwt.middleware');
 const { UserDTO } = require('../dto/user.dto');
+const { getUsersDTO } = require('../dto/getUsers.dto');
 const { CustomError } = require('../utils/errors/customErrors');
 const { ErrorCodes } = require('../utils/errors/errorCodes');
 const { generateInvalidCredentialsUserData } = require('../utils/errors/errors');
@@ -27,15 +28,17 @@ class UserRepository {
             email: process.env.ADMIN_USER,
             password: process.env.ADMIN_PASS,
             rol: 'admin',
+            documents: []
         };
 
         this.#superAdminUser = {
             _id: 'superAdmin',
-            firstName: 'Valentina',
-            lastName: 'Diego',
+            firstName: 'Lucas',
+            lastName: 'Pereyra',
             email: process.env.SADMIN_USER,
             password: process.env.SADMIN_PASS,
             rol: 'superAdmin',
+            documents: []
         };
     }
 
@@ -76,11 +79,10 @@ class UserRepository {
             return user;
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error de registro',
-                cause: 'Ocurrió un error al registrar el usuario en la base de datos',
-                message: 'Algo salió mal al generar un nuevo usuario',
-                error: ErrorCodes.USER_REGISTER_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error de registro',
+                cause: error.cause || 'Ocurrió un error al registrar el usuario en la base de datos',
+                message: error.message || 'Algo salió mal al generar un nuevo usuario',
+                code: error.code || ErrorCodes.USER_REGISTER_ERROR,
                 status: error.status || 500
             })
         }
@@ -95,6 +97,8 @@ class UserRepository {
             firstName: user.firstName,
             lastName: user.lastName,
             cart: user.cart,
+            documents: user.documents,
+            picture: user.picture
         });
     }
 
@@ -138,15 +142,17 @@ class UserRepository {
 
             const cart = await this.#cartDAO.addCart({ products: [] });
             const user = await this.#generateNewUser(firstName, lastName, email, password, cart);
-
-            return await this.#userDAO.create(user);
+            await this.#userDAO.create(user)
+            const updateConnection = await this.#userDAO.findByEmail(email);
+            console.log(updateConnection);
+            await this.updateConnection(updateConnection._id);
+            return user;
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error de registro',
-                cause: 'Algo salió mal al registrar un nuevo usuario.',
-                message: 'No se pudo crear un nuevo usuario',
-                code: ErrorCodes.USER_REGISTER_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error de registro',
+                cause: error.cause || 'Algo salió mal al registrar un nuevo usuario.',
+                message: error.message || 'No se pudo crear un nuevo usuario',
+                code: error.code || ErrorCodes.USER_REGISTER_ERROR,
                 status: error.status || 500
             })
         }
@@ -166,7 +172,6 @@ class UserRepository {
             } else {
                 user = await this.#userDAO.findByEmail(email);
 
-
                 if (!user || !isValidPassword(password, user.password)) {
                     throw CustomError.createError({
                         name: 'Error de logeo',
@@ -178,6 +183,9 @@ class UserRepository {
                 }
             }
 
+            const date = new Date();
+            await this.#userDAO.lastConnection(email, date);
+
             const userPayload = new UserDTO(user);
 
             const accessToken = this.#generateAccessToken(userPayload);
@@ -185,11 +193,10 @@ class UserRepository {
             return { accessToken, userPayload };
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error de logeo',
-                cause: 'Ocurrio validar sus credenciales. Intente nuevamente o cambie su contraseña',
-                message: 'Contraseña incorrecta',
-                code: ErrorCodes.USER_LOGIN_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error de logeo',
+                cause: error.cause || 'Ocurrio validar sus credenciales. Intente nuevamente o cambie su contraseña',
+                message: error.message || 'Contraseña incorrecta',
+                code: error.code || ErrorCodes.USER_LOGIN_ERROR,
                 status: error.status || 500
             })
         }
@@ -285,7 +292,22 @@ class UserRepository {
 
     async githubLogin(profile) {
         try {
+
+            if (profile._json.email === null) {
+                throw CustomError.createError({
+                    name: 'Email inválido',
+                    cause: 'No se pudo completar el registro dado a que no se pudo acceder al email de github. Asegurate de compartir esta información desde tu cuenta de github.',
+                    message: 'Hubo un problema con su cuenta de github',
+                    code: ErrorCodes.GITHUB_LOGIN_ERROR,
+                    status: 400
+                })
+            }
+
             const user = await this.#userDAO.findByEmail(profile._json.email);
+
+            const currentTime = new Date();
+
+            await this.#userDAO.lastConnection(profile._json.email, currentTime);
 
             if (!user) {
                 const fullName = profile._json.name;
@@ -293,7 +315,7 @@ class UserRepository {
                 const lastName = fullName.substring(fullName.lastIndexOf(' ') + 1);
                 const password = '123';
 
-                const newUser = await this.registerUser(firstName, lastName, age, profile._json.email, password);
+                const newUser = await this.registerUser(firstName, lastName, profile._json.email, password);
                 const accessToken = this.#generateAccessToken(newUser);
 
                 return { accessToken, user: newUser };
@@ -303,11 +325,10 @@ class UserRepository {
             return { accessToken, user };
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error de logeo',
-                cause: 'Ocurrió un error inesperado y no se pudo emparejar su cuenta de github en la base de datos',
-                message: 'Hubo un problema con su cuenta de github',
-                code: ErrorCodes.GITHUB_LOGIN_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error de logeo',
+                cause: error.cause || 'Ocurrió un error inesperado y no se pudo emparejar su cuenta de github en la base de datos',
+                message: error.message || 'Hubo un problema con su cuenta de github',
+                code: error.code || ErrorCodes.GITHUB_LOGIN_ERROR,
                 status: error.status || 500
             })
         }
@@ -331,11 +352,10 @@ class UserRepository {
             }
         } catch (error) {
             throw CustomError.createError({
-                name: 'Error al eliminar el usuario',
-                cause: 'Su petición no fue procesada de forma correcta y no se pudo eliminar el usuario.',
-                message: 'Hubo un problema y no se pudo elimiar el usuario',
-                code: ErrorCodes.USER_DELETION_ERROR,
-                otherProblems: error,
+                name: error.name || 'Error al eliminar el usuario',
+                cause: error.cause || 'Su petición no fue procesada de forma correcta y no se pudo eliminar el usuario.',
+                message: error.message || 'Hubo un problema y no se pudo elimiar el usuario',
+                code: error.code || ErrorCodes.USER_DELETION_ERROR,
                 status: error.status || 500
             })
         }
@@ -344,13 +364,19 @@ class UserRepository {
 
     async getUserById(id) {
         try {
-            const user = await this.#userDAO.findById(id);
-            return user;
+            if (id === 'admin') {
+                return new UserDTO(this.#adminUser);
+            } else if (id === 'superAdmin') {
+                return new UserDTO(this.#superAdminUser);
+            } else {
+                const user = await this.#userDAO.findById(id);
+                return new UserDTO(user);
+            }
         } catch {
             throw CustomError.createError({
                 name: 'Email desconocido',
                 cause: 'Ha ingresado un ID inválido o el usuario no se encuentra registrado en la base de datos',
-                message: 'El emmail no se encuentra registrado',
+                message: 'El email no se encuentra registrado',
                 code: ErrorCodes.UNDEFINED_USER,
                 status: 404
             })
@@ -358,16 +384,144 @@ class UserRepository {
     }
 
     async changeRole(id) {
-        const user = await this.#verifyUser(id);
-
-        if (user.rol === 'user') {
-            await this.#userDAO.updateRole(user.email, 'premium');
-        } else {
-            await this.#userDAO.updateRole(user.email, 'user');
+        try {
+            const user = await this.#verifyUser(id);
+            if (user.rol === 'user' && user.documents.length === 3) {
+                await this.#userDAO.updateRole(user.email, 'premium');
+                const updatedUser = await this.#userDAO.findById(id);
+                return new UserDTO(updatedUser);
+            } else if (user.rol === 'premium') {
+                await this.#userDAO.updateRole(user.email, 'user');
+                const updatedUser = await this.#userDAO.findById(id);
+                return new UserDTO(updatedUser);
+            } else {
+                throw CustomError.createError({
+                    name: 'No se puede actualizar',
+                    cause: 'No se ha podido actualizar el rol del usuario por falta de documentación',
+                    message: 'Falta de documentación',
+                    code: ErrorCodes.UNDEFINED_DATA,
+                    status: 400
+                })
+            }
+        } catch (error) {
+            throw CustomError.createError({
+                name: error.name || 'No se puede actualizar el rol',
+                cause: error.cause || 'Algo salió mal con el proceso de actualización y la operación no pudo completarse',
+                message: error.message || 'Ocurrió un error inesperado',
+                code: error.code || ErrorCodes.UNDEFINED_DATA,
+                status: error.status || 400
+            })
         }
 
-        const updatedUser = await this.#userDAO.findById(id);
-        return new UserDTO(updatedUser);
+    }
+
+    async updateConnection(id) {
+        const user = await this.#userDAO.findById(id);
+        if (user) {
+            const date = new Date();
+            await this.#userDAO.lastConnection(user.email, date)
+        }
+    }
+
+    async updateUserDocuments(userId, files) {
+        const user = await this.#verifyUser(userId);
+
+        if (!files) {
+            throw CustomError.createError({
+                name: 'Campos vacíos',
+                cause: 'No se pudo completar la operación, debe cargar al menos un archivo a la documentación.',
+                message: 'No puede enviar un formulario vacío',
+                code: ErrorCodes.UNDEFINED_DATA,
+                status: 400
+            });
+        }
+
+        const newDocuments = [];
+
+        if (files.identification) {
+            newDocuments.push({
+                name: 'identification',
+                reference: `/public/documents/${files.identification[0].filename}`
+            });
+        }
+        if (files.proofOfAddress) {
+            newDocuments.push({
+                name: 'proofOfAddress',
+                reference: `/public/documents/${files.proofOfAddress[0].filename}`
+            });
+        }
+        if (files.proofOfAccount) {
+            newDocuments.push({
+                name: 'proofOfAccount',
+                reference: `/public/documents/${files.proofOfAccount[0].filename}`
+            });
+        }
+
+        const updatedDocuments = user.documents.filter(doc => !newDocuments.some(newDoc => newDoc.name === doc.name));
+        updatedDocuments.push(...newDocuments);
+
+        await this.#userDAO.updateDocuments(userId, updatedDocuments);
+
+        return await this.#userDAO.findById(userId);
+    }
+
+    async updatePicture(userId, file) {
+        await this.#verifyUser(userId);
+
+        if (file === undefined) {
+            throw CustomError.createError({
+                name: 'Campo vacio',
+                cause: 'No se pudo completar la operación, debe seleccionar un archivo para actulizar su perfil',
+                message: 'No puede enviar un formaulario vacio',
+                code: ErrorCodes.UNDEFINED_DATA,
+                status: 400
+            })
+        }
+
+        const picture = `/public/profile/${file.filename}`
+
+        await this.#userDAO.updatePicture(userId, picture);
+    }
+
+    async getUsers() {
+        const users = await this.#userDAO.findAll();
+        if (!users) {
+            throw CustomError.createError({
+                name: 'Error de usuarios',
+                cause: 'Ha ocurrido un error inesperado y no se han podido retornas los usuarios de la base de datos',
+                message: 'No se pudieron retornar los productos de la base de datos',
+                code: ErrorCodes.DATABASE_ERROR,
+                status: 500
+            })
+        }
+        const usersPayload = users.map(user => new getUsersDTO(user));
+        return usersPayload;
+    }
+
+    async deleteUsers() {
+        const users = await this.#userDAO.findAll();
+        const currentTime = new Date();
+        const thirtyMinutesInMs = 60 * 60 * 48 * 1000;
+        const inactiveUsers = [];
+
+        users.forEach(user => {
+            const lastConnectionDate = new Date(user.last_connection);
+
+            const timeDifference = currentTime - lastConnectionDate;
+
+            if (timeDifference > thirtyMinutesInMs) {
+                inactiveUsers.push(user);
+            }
+        });
+
+        for (const user of inactiveUsers) {
+            await this.deleteUser(user.email);
+            await this.#cartDAO.getCartById(user.cart);
+
+            await new MailingService().sendDeletionNotification(user.email, user.firstName, user.lastName);
+        }
+
+        return inactiveUsers;
     }
 }
 

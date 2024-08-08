@@ -9,8 +9,16 @@
                 <p>Código de Producto: {{this.code}}</p>
                 <p>Cantidad en Carrito: {{this.quantity}}</p>
             </div>
+            <form action="/cart/{{../cartId}}/product/{{this.productId}}" method="post" data-method="DELETE">
+                <input type="submit" value="Eliminar producto del carrito">
+            </form>
         </li>
         {{/each}}
     </ul>
     <a href="/">Volver</a>
+    {{#if showButton}}
+    <form action="/cart/{{cartId}}/purchase" method="post">
+        <input type="submit" value="Finalizar Compra">
+    </form>
+    {{/if}}
 </div>

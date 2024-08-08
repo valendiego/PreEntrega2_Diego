@@ -1,11 +1,14 @@
 const { CartRepository } = require('../repository/carts.repository');
+const { TicketRepository } = require('../repository/ticket.repository');
 
 class Controller {
 
     #cartRepository
+    #ticketRepository
 
     constructor() {
         this.#cartRepository = new CartRepository();
+        this.#ticketRepository = new TicketRepository();
     }
 
     async getCartById(req, res) {
@@ -25,13 +28,17 @@ class Controller {
                 }))
             };
 
+            const showButton = cartData.products.length !== 0;
+
             res.status(200).render('cart', {
                 cart: cartData,
                 titlePage: 'Carrito',
                 style: ['styles.css'],
+                script: ['scripts.js'],
                 isLoggedIn,
                 isNotLoggedIn: !isLoggedIn,
-                cartId: cartData.id
+                cartId: cartData.id,
+                showButton
             }); // Responde con el carrito obtenido
 
         } catch (error) {
@@ -48,6 +55,37 @@ class Controller {
             await this.#cartRepository.addProductToCart(productId, cartId, user);
             req.logger.info('Producto agregado al carrito de manera correcta');
             res.redirect('/products');
+        } catch (error) {
+            req.logger.error(error);
+            res.status(error.status).json({ error });
+        }
+    }
+
+    async deleteProductFromCart(req, res) {
+        try {
+            const cartId = req.params.cid;
+            const productId = req.params.pid
+            await this.#cartRepository.deleteProductFromCart(productId, cartId);
+            req.logger.info('Producto eliminado del carrito.');
+            res.status(200).redirect(`/cart/${cartId}`);
+        } catch (error) {
+            req.logger.error(error);
+            res.status(error.status).json({ error });
+        }
+    }
+
+    async generateTicket(req, res) {
+        try {
+            const { cid } = req.params;
+            const userEmail = req.user.email;
+            const { code, amount, purchase_datetime, purchaser } = await this.#ticketRepository.generateTicket(cid, userEmail);
+            const ticket = { code, amount, purchase_datetime, purchaser };
+            req.logger.info('Compra finalizada!');
+            res.status(201).render('ticket', {
+                ticket,
+                style: ['styles.css'],
+                titlePage: 'Ticket de compra'
+            });
         } catch (error) {
             req.logger.error(error);
             res.status(error.status).json({ error });

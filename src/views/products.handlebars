@@ -46,16 +46,17 @@
         <img src="{{this.thumbnail}}" class="card-img-top" alt="{{this.title}}">
         <div class="cart-body">
             <h4 class="card-title">{{this.title}}</h4>
+            {{#if isLoggedIn}}
             <p class="card-text">Precio: {{this.price}}</p>
+            {{/if}}
             <p class="card-text">Descripción: {{this.description}}</p>
             <p class="card-text">Stock: {{this.stock}}</p>
-            <p class="card-text">ID: {{this._id}}</p>
-            <a href="http://localhost:8080/products/{{this._id}}">Ver</a>
+            <p class="card-text">ID: {{this.id}}</p>
+            <a href="/products/{{this.id}}">Ver</a>
         </div>
     </div>
-
-
     {{/each}}
+
     <div class="container pages">
         {{#if products.hasPrevPage}}
         <p>Página actual: {{products.page}}</p>

@@ -1,0 +1,172 @@
+const products = [
+    {
+        id: 1,
+        title: "Laptop ASUS",
+        description: "Potente laptop con procesador Intel i7 y tarjeta gráfica dedicada.",
+        price: 1200,
+        thumbnail: "../img/laptop.webp",
+        code: "ASUS123",
+        status: true,
+        stock: 50,
+        category: "laptops",
+        owner: "admin"
+    },
+    {
+        id: 2,
+        title: "Teléfono inteligente Samsung",
+        description: "Teléfono Android de última generación con pantalla AMOLED y cámara de alta resolución.",
+        price: 899,
+        thumbnail: "../img/samsung.webp",
+        code: "SAMSUNG456",
+        status: true,
+        stock: 30,
+        category: "celulares",
+        owner: "admin"
+    },
+    {
+        id: 3,
+        title: "Auriculares inalámbricos Sony",
+        description: "Auriculares con cancelación de ruido y calidad de sonido excepcional.",
+        price: 199,
+        thumbnail: "../img/auriculares.webp",
+        code: "SONY789",
+        status: true,
+        stock: 20,
+        category: "auriculares",
+        owner: "admin"
+    },
+    {
+        id: 4,
+        title: "Cámara Canon DSLR",
+        description: "Cámara réflex digital con sensor de alta resolución y grabación de video 4K.",
+        price: 1499,
+        thumbnail: "../img/camara.webp",
+        code: "CANON101",
+        status: true,
+        stock: 15,
+        category: "camaras",
+        owner: "admin"
+    },
+    {
+        id: 5,
+        title: "Smartwatch Fitbit",
+        description: "Reloj inteligente con monitor de actividad física, GPS integrado y resistencia al agua.",
+        price: 129,
+        thumbnail: "../img/smartwatch.webp",
+        code: "FITBIT202",
+        status: true,
+        stock: 40,
+        category: "relojes",
+        owner: "admin"
+    },
+    {
+        id: 6,
+        title: "Impresora HP Todo en Uno",
+        description: "Impresora multifunción con escáner y copiadora, ideal para el hogar o la oficina.",
+        price: 299,
+        thumbnail: "../img/impresora.webp",
+        code: "HP303",
+        status: true,
+        stock: 25,
+        category: "impresoras",
+        owner: "admin"
+    },
+    {
+        id: 7,
+        title: "Monitor LG Ultrawide",
+        description: "Monitor ultrapanorámico con resolución 4K y tecnología IPS para una calidad de imagen excepcional.",
+        price: 799,
+        thumbnail: "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRzxuetLuKWfFXgXxI2_9EeUMarnijWlIfnCdUyTBrxMyAN2mON0lrcug146jUNgrJ-PyPj_gYhD-3AnobCneex8SeCJrcBvQ1MGHHni3ym&usqp=CAE",
+        code: "LG777",
+        status: true,
+        stock: 32,
+        category: "monitores",
+        owner: "admin"
+    },
+    {
+        id: 8,
+        title: "Laptop Dell XPS",
+        description: "Laptop ultradelgada con procesador Intel Core i7 y pantalla táctil de alta definición.",
+        price: 1500,
+        thumbnail: "img",
+        code: "DELLXPS567",
+        status: true,
+        stock: 15,
+        category: "laptops",
+        owner: "admin"
+    },
+    {
+        id: 9,
+        title: "Teléfono inteligente iPhone 13",
+        description: "Teléfono Apple con chip A15 Bionic, cámara dual avanzada y pantalla Super Retina XDR.",
+        price: 1099,
+        thumbnail: "../img/ssd240.webp",
+        code: "IPHONE13XYZ",
+        status: true,
+        stock: 40,
+        category: "celulares",
+        owner: "admin"
+    },
+    {
+        id: 10,
+        title: "Auriculares Bluetooth JBL",
+        description: "Auriculares inalámbricos con conectividad Bluetooth y sonido potente.",
+        price: 129,
+        thumbnail: "../img/GTX1630.webp",
+        code: "JBL789",
+        status: true,
+        stock: 25,
+        category: "auriculares",
+        owner: "admin"
+    },
+    {
+        id: 11,
+        title: "Laptop HP Pavilion",
+        description: "Laptop versátil con procesador AMD Ryzen y gráficos integrados.",
+        price: 899,
+        thumbnail: "../img/Fuente.webp",
+        code: "HP123",
+        status: true,
+        stock: 20,
+        category: "laptops",
+        owner: "admin"
+    },
+    {
+        id: 12,
+        title: "Teléfono inteligente Google Pixel 6",
+        description: "Teléfono Android con procesador Tensor y cámara de alta calidad.",
+        price: 799,
+        thumbnail: "../img/GTX1630.webp",
+        code: "PIXEL678",
+        status: true,
+        stock: 30,
+        category: "celulares",
+        owner: "admin"
+    },
+    {
+        id: 13,
+        title: "Auriculares inalámbricos Bose",
+        description: "Auriculares con cancelación de ruido adaptable y sonido envolvente.",
+        price: 299,
+        thumbnail: "../img/GTX1630.webp",
+        code: "BOSE456",
+        status: true,
+        stock: 15,
+        category: "auriculares",
+        owner: "admin"
+    },
+    {
+        id: 14,
+        title: "Laptop Apple MacBook Air",
+        description: "Laptop ligera y potente con chip M1 y pantalla Retina.",
+        price: 1199,
+        thumbnail: "../img/GTX1630.webp",
+        code: "MACBOOKAIR567",
+        status: true,
+        stock: 10,
+        category: "laptops",
+        owner: "admin"
+    }
+];
+
+module.exports = products;

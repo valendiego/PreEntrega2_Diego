@@ -9,4 +9,8 @@ router.get('/:cid', verifyToken, isUser, async (req, res) => new Controller().ge
 
 router.post('/:cid/products/:pid', verifyToken, isUser, async (req, res) => new Controller().addProductToCart(req, res));
 
+router.delete('/:cid/product/:pid', verifyToken, isUser, async (req, res) => new Controller().deleteProductFromCart(req, res));
+
+router.post('/:cid/purchase', verifyToken, isUser, async (req, res) => new Controller().generateTicket(req, res));
+
 module.exports = router; // Exporta el enrutador

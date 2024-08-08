@@ -22,8 +22,10 @@
     "helmet": "^7.1.0",
     "icons": "^1.0.0",
     "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
     "mongoose": "^8.2.4",
     "mongoose-paginate-v2": "^1.8.0",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.13",
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
@@ -31,11 +33,17 @@
     "passport-local": "^1.0.0",
     "session-file-store": "^1.5.0",
     "socket.io": "^4.7.4",
-    "supertest-session": "^5.0.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.6.13",
     "winston": "^3.13.0"
+  },
+  "devDependencies": {
+    "chai": "^5.1.1",
+    "mocha": "^10.7.0",
+    "prettier": "^3.3.3",
+    "supertest": "^7.0.0",
+    "supertest-session": "^5.0.1"
   }
 }
