@@ -1,11 +1,15 @@
 {
   "name": "preentrega3_diego",
-  "description": "Este producto se encuentra en construcción.",
+  "description": "",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx mocha test --recursive",
+    "start": "node src/app",
+    "dev": "nodemon src/app"
   },
+
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
