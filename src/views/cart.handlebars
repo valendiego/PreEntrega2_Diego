@@ -1,5 +1,5 @@
 <div class="container">
-    <h2>ID Carrito: {{cart.id}}</h2>
+    <h2>ID Carrito: {{cartId}}</h2>
     <ul>
         {{#each cart.products}}
         <li>
@@ -15,7 +15,7 @@
         </li>
         {{/each}}
     </ul>
-    <a href="/">Volver</a>
+    <a href="/users">Volver</a>
     {{#if showButton}}
     <form action="/cart/{{cartId}}/purchase" method="post">
         <input type="submit" value="Finalizar Compra">

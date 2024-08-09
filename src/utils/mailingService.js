@@ -12,7 +12,7 @@ class MailingService {
             const baseUrl = process.env.BASE_URL;
             const port = process.env.PORT
             const prodUrl = process.env.PROD_URL
-            const devLink = `${baseUrl}${port}/users/resetPassword/${randomNumber}`;
+            const devLink = `${baseUrl}:${port}/users/resetPassword/${randomNumber}`;
             const prodLink = `${prodUrl}users/resetPassword/${randomNumber}`
             const currentUrl = process.env.LOGGER_ENV === 'production' ? prodLink : devLink;
 

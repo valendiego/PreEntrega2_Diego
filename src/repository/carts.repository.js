@@ -62,7 +62,7 @@ class CartRepository {
             let cart = await this.#verifyCartExists(id);
             // Se verifica que no se hayan eliminado de la DB los productos cargados en el carrito
             const updatedCart = cart.products.filter(i => i.product !== null);
-            if (updatedCart.lenght !== cart.products.length) {
+            if (updatedCart.length !== cart.products.length) {
                 cart.products = updatedCart;
                 await this.#cartDAO.updateCart(id, { products: cart.products })
             }
@@ -130,14 +130,14 @@ class CartRepository {
             await this.#verifyProductExists(productId);
             await this.#verifyCartExists(cartId);
             await this.#cartDAO.updateCart(cartId, { products: { product: productId } }, '$pull');
-            const cart = this.getCartById(cartId);
+            const cart = await this.getCartById(cartId);
             return cart;
         } catch (error) {
             throw CustomError.createError({
                 name: error.name || 'Error con el carrito',
                 cause: error.cause || 'No se pudo realizar la actualizacion del carrito en la base de datos y, por este motivo, el producto no pudo ser eliminado',
                 message: error.message || 'Error al eliminar el producto del carrito',
-                code: error.codeErrorCodes.CART_UPDATE_ERROR,
+                code: error.code || ErrorCodes.CART_UPDATE_ERROR,
                 status: error.status || 500
             });
         }
@@ -179,7 +179,7 @@ class CartRepository {
         } catch (error) {
             throw CustomError.createError({
                 name: error.name || 'Error con el carrito',
-                cause: error.cause || 'Hubo un problema alctualizar el carrito en la base de datos.',
+                cause: error.cause || 'Hubo un problema acttualizar el carrito en la base de datos.',
                 message: error.message || 'Error al actualizar el carrito',
                 code: error.code || ErrorCodes.CART_UPDATE_ERROR,
                 status: error.status || 500

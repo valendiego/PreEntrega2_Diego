@@ -49,8 +49,8 @@ class Controller {
             const productId = req.params.pid;
             const product = await this.productRepository.getProductById(productId);
             const user = req.user;
-            const cartId = req.user.cart;
-
+            const cartId = user ? user.cart : 'noCart'; // Usar 'noCart' o un valor predeterminado
+    
             const productData = {
                 title: product.title,
                 thumbnail: product.thumbnail,
@@ -60,9 +60,9 @@ class Controller {
                 code: product.code,
                 id: product.id,
                 isLoggedIn,
-                cartId: user ? user.cart : 'noCart'
+                cartId
             };
-
+    
             res.status(200).render('product', {
                 product: [productData],
                 titlePage: `Productos | ${product.title}`,
@@ -73,7 +73,7 @@ class Controller {
             });
         } catch (error) {
             req.logger.error(error);
-            res.status(error.status).json({ error });
+            res.status(error.status || 500).json({ error: error.message || 'Internal Server Error' });
         }
     }
 

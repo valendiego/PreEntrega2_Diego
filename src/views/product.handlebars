@@ -5,13 +5,17 @@
         <img src="../{{thumbnail}}" alt="imagen de {{title}}">
         <div class="product__info">
             <p>{{description}}</p>
+            {{#if isLoggedIn}}
             <p>Precio: {{price}}</p>
+            {{/if}}
             <p>Stock: {{stock}}</p>
             <p>Código: {{code}}</p>
             <p>ID: {{id}}</p>
-            <form action="/api/products/{{id}}" id="formProductToCart" method="post">
+            {{#if isLoggedIn}}
+            <form action="/cart/{{cartId}}/products/{{id}}" id="formProductToCart" method="post">
                 <input id="addToCart" type="submit" value="Agregar al Carrito">
             </form>
+             {{/if}}
         </div>
         <a href="/products">Volver</a>
     </div>
