@@ -31,7 +31,7 @@ paths:
           name: category
           schema:
             type: string
-            enum: [Almacenamiento, Fuentes, Memorias, Accesorios, Placas Madres, Procesador, Placas de Video]
+            enum: [celulares, auriculares, laptops, relojes, camaras, monitores, impresoras]
           description: Filtrar productos por categoría
         - in: query
           name: availability
@@ -204,6 +204,6 @@ components:
         code: abc123
         status: true
         stock: 80
-        category: almacenamiento
+        category: celulares
         owner: admin
         id: 666dfd53efe77768201d0442  

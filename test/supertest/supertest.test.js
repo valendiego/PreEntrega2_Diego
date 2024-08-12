@@ -707,7 +707,7 @@ describe('Testing Tech Store', () => {
                 price: 300,
                 code: 'abc129',
                 stock: 80,
-                category: 'almacenamiento'
+                category: 'celulares'
             };
 
             const product = await createProduct(cookie, productMock);
