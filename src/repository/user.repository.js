@@ -57,15 +57,7 @@ class UserRepository {
     async #generateNewUser(firstName, lastName, email, password, cart) {
         try {
             this.#validateLoginCredentials(email, password);
-            if (age <= 0) {
-                throw CustomError.createError({
-                    name: 'Error en la edad',
-                    cause: 'Debe ingresar un número válido mayor a 0',
-                    message: 'Edad inválida',
-                    code: ErrorCodes.AGE_VALIDATION_ERROR,
-                    status: 400
-                })
-            }
+            
             const hashedPassword = hashPassword(password);
 
             const user = {

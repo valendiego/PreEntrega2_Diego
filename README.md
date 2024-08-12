@@ -26,7 +26,7 @@ npm test
 
 ## Deploy
 
-Se realizó el deploy de la aplicación en la plataforma Railway. Puedes acceder al mismo ingresando [aquí]()
+Se realizó el deploy de la aplicación en la plataforma Railway. Puedes acceder al mismo ingresando [aquí](https://techstore-backend.up.railway.app/users)
 
 ## Construido usando
 

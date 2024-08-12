@@ -21,9 +21,6 @@ paths:
                 lastName:
                   type: string
                   example: Apellido
-                age:
-                  type: integer
-                  example: 18
                 email:
                   type: string
                   example: ejemplo@ejemplo.com
@@ -146,9 +143,6 @@ paths:
                   lastName:
                     type: string
                     example: Apellido
-                  age:
-                    type: integer
-                    example: 18
                   cart:
                     type: string
                     example: 668ee54dbe856b5aeb3a0335
@@ -221,9 +215,6 @@ paths:
                   lastName:
                     type: string
                     example: Apellido
-                  age:
-                    type: integer
-                    example: 18
                   cart:
                     type: string
                     example: 668ee54dbe856b5aeb3a0335
@@ -326,9 +317,6 @@ components:
         lastName:
           type: string
           description: Apellido. Si se envia vacio se autocompleta 'Sin Identificar'
-        age:
-          type: integer
-          description: Edad. Si se envia vacio se autocompleta con 0
         email:
           type: string
           description: Email con el que se desea registrar
@@ -348,7 +336,6 @@ components:
         id: 668ee39be85f791b18e2512a
         firstName: Nombre
         lastName: Apellido
-        age: 18
         email: ejemplo@ejemplo.com
         rol: user
         cart: 668ee39be85f791b18e25128
