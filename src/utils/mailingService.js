@@ -135,7 +135,7 @@ class MailingService {
                 subject: 'Tech Store | Compra Realizada',
                 html: `
             <div>
-                <h2>Cuenta eliminada</h2>
+                <h2>¡Gracias por comprar en Tech Store!</h2>
                 <h4>Estimado ${firstName} ${lastName}, por medio de la presente le informamos que su compra por un total de $${amount} ha sido aprobada. Su código de compra es: ${ticketId}</h4>
             </div>`,
                 attachments: []
